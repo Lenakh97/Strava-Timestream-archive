@@ -31,7 +31,10 @@ export const getMemberCount = async ({
 				QueryString: `SELECT COUNT (DISTINCT athlete) FROM "${DatabaseName}"."${TableName}" WHERE Team='${TeamID}'`,
 			}),
 		)
-		teamInfo[TeamID ?? 0] = {
+		if (TeamID === undefined) {
+			continue
+		}
+		teamInfo[TeamID] = {
 			memberCount: parseFloat(result?.Rows?.[0]?.Data?.[0]?.ScalarValue ?? '0'),
 		}
 	}
