@@ -20,6 +20,7 @@
     "baseUrl": ".",
     "paths": {
       "@nordicsemiconductor/coiote-aws-converter-js": ["index.d.ts"]
-    }
+    },
+    "skipLibCheck": true
   }
 }
