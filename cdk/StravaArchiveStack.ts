@@ -144,7 +144,7 @@ export class StravaArchiveStack extends CloudFormation.Stack {
 			authType: Lambda.FunctionUrlAuthType.NONE,
 		})
 
-		new CloudFormation.CfnOutput(this, 'summaryAPIURLOutput', {
+		new CloudFormation.CfnOutput(this, 'summaryAPIURL', {
 			value: url.url,
 			exportName: 'summaryAPIURL',
 		})
