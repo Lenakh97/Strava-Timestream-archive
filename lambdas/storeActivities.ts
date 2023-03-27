@@ -4,13 +4,14 @@ import {
 	PutParameterCommand,
 	SSMClient,
 } from '@aws-sdk/client-ssm'
+import {
+	TimestreamWriteClient,
+	WriteRecordsCommand,
+} from '@aws-sdk/client-timestream-write'
 import { fromEnv } from '@nordicsemiconductor/from-env'
-import type {
-	APIGatewayProxyEventV2,
-	APIGatewayProxyResultV2,
-} from 'aws-lambda'
 import { getAccessToken } from '../stravaAPI/getAccessToken.js'
 import { getActivities } from '../stravaAPI/getActivities.js'
+import { stravaToTimestream } from '../stravaToTimestream.js'
 
 const { tableInfo, clientID, clientSecret, refreshToken } = fromEnv({
 	tableInfo: 'TABLE_INFO', // db-S1mQFez6xa7o|table-RF9ZgR5BtR1K
@@ -22,22 +23,13 @@ const { tableInfo, clientID, clientSecret, refreshToken } = fromEnv({
 const [dbName, tableName] = tableInfo.split('|') as [string, string]
 
 const ssm = new SSMClient({})
+const tsw = new TimestreamWriteClient({})
 
 const teamList = [
 	838205, 982093, 838211, 838207, 838209, 838203, 232813, 838200,
 ]
 
-export const handler = async (
-	event: APIGatewayProxyEventV2,
-): Promise<APIGatewayProxyResultV2> => {
-	console.log(JSON.stringify(event))
-	console.log({
-		clientID,
-		clientSecret,
-		refreshToken,
-		dbName,
-		tableName,
-	})
+export const handler = async (): Promise<void> => {
 	const accessToken = await getAccessToken({
 		CLIENT_ID: clientID,
 		CLIENT_SECRET: clientSecret,
@@ -67,17 +59,43 @@ export const handler = async (
 			),
 		})
 		console.log(JSON.stringify({ data }))
+		const record = stravaToTimestream(team, new Date(), data)
+		const records = []
+		if (record.length > 100) {
+			let j = 0
+			for (let i = 99; j < record.length; i += 100) {
+				records.push(record.slice(j, i))
+				j = i
+			}
+		} else {
+			records.push(record)
+		}
+		for (const rec of records) {
+			if (rec.length == 0) {
+				console.log('Empty record')
+				continue
+			} else {
+				try {
+					await tsw.send(
+						new WriteRecordsCommand({
+							DatabaseName: dbName,
+							TableName: tableName,
+							Records: rec,
+						}),
+					)
+					console.log(JSON.stringify({ written: rec }, null, 2))
+				} catch (error) {
+					console.error('Error:', error)
+				}
+			}
+		}
 	}
-
 	await ssm.send(
 		new PutParameterCommand({
 			Name: '/strava/lastFetchTime',
 			Type: ParameterType.STRING,
 			Value: new Date().toISOString(),
+			Overwrite: true,
 		}),
 	)
-
-	return {
-		statusCode: 501,
-	}
 }
