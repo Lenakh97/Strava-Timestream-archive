@@ -1,6 +1,7 @@
 import CloudFormation, {
 	aws_events as Events,
 	aws_events_targets as EventsTargets,
+	aws_ssm as SSM,
 } from 'aws-cdk-lib'
 import IAM, { IPrincipal } from 'aws-cdk-lib/aws-iam'
 import Lambda from 'aws-cdk-lib/aws-lambda'
@@ -61,6 +62,18 @@ export class StravaArchiveStack extends CloudFormation.Stack {
 					'Fetches activities from Strava and stores them in Timestream',
 				environment: {
 					TABLE_INFO: table.ref,
+					CLIENT_ID: SSM.StringParameter.valueForStringParameter(
+						this,
+						'/strava/clientId',
+					),
+					CLIENT_SECRET: SSM.StringParameter.valueForStringParameter(
+						this,
+						'/strava/clientSecret',
+					),
+					REFRESH_TOKEN: SSM.StringParameter.valueForStringParameter(
+						this,
+						'/strava/refreshToken',
+					),
 				},
 				initialPolicy: [
 					new IAM.PolicyStatement({
@@ -70,6 +83,10 @@ export class StravaArchiveStack extends CloudFormation.Stack {
 					new IAM.PolicyStatement({
 						actions: ['timestream:DescribeEndpoints'],
 						resources: ['*'],
+					}),
+					new IAM.PolicyStatement({
+						actions: ['ssm:GetParameter', 'ssm:PutParameter'],
+						resources: ['arn:aws:ssm:*:*:parameter/strava/*'],
 					}),
 				],
 				logRetention: RetentionDays.ONE_WEEK,

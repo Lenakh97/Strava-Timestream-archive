@@ -7,7 +7,7 @@ const checksum = (activity: StravaActivity): string => {
 	return shasum.digest('hex')
 }
 
-type StravaActivity = {
+export type StravaActivity = {
 	resource_state: number // 2
 	athlete: {
 		resource_state: number // 2
