@@ -15,7 +15,7 @@ export const getTotalDistance = async ({
 	const tsq = new TimestreamQueryClient({})
 	const result = await tsq.send(
 		new QueryCommand({
-			QueryString: `SELECT SUM(measure_value::double) FROM "${DatabaseName}"."${TableName}" WHERE measure_name='distance' AND (SELECT week(time)=${weekNumber})`,
+			QueryString: `SELECT SUM(measure_value::double) / 1000 FROM "${DatabaseName}"."${TableName}" WHERE measure_name='distance' AND (SELECT week(time)=${weekNumber})`,
 		}),
 	)
 	return parseFloat(result?.Rows?.[0]?.Data?.[0]?.ScalarValue ?? '0')

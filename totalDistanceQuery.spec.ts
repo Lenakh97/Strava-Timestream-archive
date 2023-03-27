@@ -45,7 +45,7 @@ describe('getTotalDistance()', () => {
 		)
 
 		const expectedDistance = testData.reduce(
-			(totalDistance, { distance }) => totalDistance + distance,
+			(totalDistance, { distance }) => totalDistance + distance / 1000,
 			0,
 		)
 		expect(expectedDistance).toBeGreaterThan(0)
