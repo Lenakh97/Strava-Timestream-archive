@@ -45,7 +45,7 @@ export const getPointsForGraph = async ({
                         WHEN activity_type = 'Snowboard' THEN measure_value::double * 0
                         WHEN activity_type = 'AlpineSki' THEN measure_value::double * 0
                         ELSE measure_value::double
-                    END) / ${teamInfo[TeamID]?.memberCount}) + ${hPoints}
+                    END)/ 1000 / ${teamInfo[TeamID]?.memberCount}) + ${hPoints}
                 FROM "${DatabaseName}"."${TableName}" 
                 WHERE (measure_name = 'distance')
                 AND Team='${TeamID}'
