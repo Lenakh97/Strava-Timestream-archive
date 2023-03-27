@@ -8,6 +8,7 @@ import { randomUUID } from 'crypto'
 import { getTotalTimePerClub } from './getTotalTimePerClub.js'
 import { stravaToTimestream } from './stravaToTimestream.js'
 import testData from './test-data/activities.json'
+import { weekNumber } from './weekNumber.js'
 
 const tsw = new TimestreamWriteClient({})
 const testDatabaseName = process.env.TEST_DB_NAME as string
@@ -62,6 +63,7 @@ describe('getTotalTimePerClub()', () => {
 					'42': { memberCount: 3 },
 					'43': { memberCount: 3 },
 				},
+				weekNumber: weekNumber(currentTime),
 			}),
 		).toEqual(expectedMinutesPerAthlete)
 	})

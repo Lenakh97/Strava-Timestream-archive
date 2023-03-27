@@ -10,10 +10,12 @@ export const getTotalTimePerClub = async ({
 	DatabaseName,
 	TableName,
 	teamInfo,
+	weekNumber,
 }: {
 	DatabaseName: string
 	TableName: string
 	teamInfo: TeamInfo
+	weekNumber: number
 }): Promise<TeamInfoTime> => {
 	const teamArray = Object.keys(teamInfo)
 	const tsq = new TimestreamQueryClient({})
@@ -21,7 +23,7 @@ export const getTotalTimePerClub = async ({
 	for (const TeamID of teamArray) {
 		const result = await tsq.send(
 			new QueryCommand({
-				QueryString: `SELECT SUM(measure_value::double) /60 / ${teamInfo[TeamID]?.memberCount}  FROM "${DatabaseName}"."${TableName}" WHERE (measure_name = 'elapsed_time') AND Team='${TeamID}'`,
+				QueryString: `SELECT SUM(measure_value::double) /60 / ${teamInfo[TeamID]?.memberCount}  FROM "${DatabaseName}"."${TableName}" WHERE (measure_name = 'elapsed_time') AND Team='${TeamID}' AND (SELECT week(time)=${weekNumber})`,
 			}),
 		)
 		teamInfoTime[TeamID] = {
