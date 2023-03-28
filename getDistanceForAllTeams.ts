@@ -1,0 +1,45 @@
+import {
+	QueryCommand,
+	Row,
+	TimestreamQueryClient,
+} from '@aws-sdk/client-timestream-query'
+
+export type DistanceInfo = Record<string, { distance: number }>
+
+export const getDistanceForAllTeams = async ({
+	DatabaseName,
+	TableName,
+	weekNumber,
+}: {
+	DatabaseName: string
+	TableName: string
+	weekNumber: number
+}): Promise<DistanceInfo> => {
+	const tsq = new TimestreamQueryClient({})
+	const teamInfo = {} as DistanceInfo
+	const teams = await tsq.send(
+		new QueryCommand({
+			QueryString: `SELECT DISTINCT Team FROM "${DatabaseName}"."${TableName}"`,
+		}),
+	)
+	const teamArray = []
+	const rows = teams?.Rows as Row[]
+	for (const tsData of rows) {
+		teamArray.push(tsData?.Data?.[0]?.ScalarValue)
+	}
+	for (const TeamID of teamArray) {
+		const result = await tsq.send(
+			new QueryCommand({
+				QueryString: `SELECT SUM(measure_value::double) / 1000 FROM "${DatabaseName}"."${TableName}" WHERE measure_name='distance' AND Team='${TeamID}' AND (SELECT week(time)=${weekNumber})`,
+			}),
+		)
+		if (TeamID === undefined) {
+			continue
+		}
+		teamInfo[TeamID] = {
+			distance: parseFloat(result?.Rows?.[0]?.Data?.[0]?.ScalarValue ?? '0'),
+		}
+	}
+
+	return teamInfo
+}
