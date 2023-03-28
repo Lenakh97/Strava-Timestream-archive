@@ -103,6 +103,7 @@ describe('getSummary()', () => {
 					{ id: 42, name: 'Team A' },
 					{ id: 43, name: 'Team B' },
 				],
+				StravaChallengeWeeks: [weekNumber(currentTime)],
 			}),
 		).toMatchObject(expectedResult)
 	})

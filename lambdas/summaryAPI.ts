@@ -21,10 +21,13 @@ export const handler = async (
 	event: APIGatewayProxyEventV2,
 ): Promise<APIGatewayProxyResultV2> => {
 	console.log(JSON.stringify(event))
+	const StravaChallengeWeeks = [13, 14, 15, 16, 17]
+
 	const summary = await getSummary({
 		DatabaseName: dbName,
 		TableName: tableName,
 		teamInfo: teamList,
+		StravaChallengeWeeks: StravaChallengeWeeks,
 	})
 	return {
 		statusCode: 200,

@@ -37,12 +37,13 @@ export const getSummary = async ({
 	DatabaseName,
 	TableName,
 	teamInfo,
+	StravaChallengeWeeks,
 }: {
 	DatabaseName: string
 	TableName: string
 	teamInfo: Team[]
+	StravaChallengeWeeks: number[]
 }): Promise<Summary> => {
-	const StravaChallengeWeeks = [13]
 	const currentTime = new Date()
 	const memberCount = await getMemberCount({
 		DatabaseName: DatabaseName,
@@ -51,8 +52,8 @@ export const getSummary = async ({
 	let totDist = 0
 	let totHours = 0
 	const weeklyArray = [] as WeeklySummary[]
-	const teamInfoArray = [] as TeamInformation
 	for (const week of StravaChallengeWeeks) {
+		const teamInfoArray = [] as TeamInformation
 		const timePerAthlete = await getTotalTimePerClub({
 			DatabaseName: DatabaseName,
 			TableName: TableName,
