@@ -12,6 +12,7 @@ import { fromEnv } from '@nordicsemiconductor/from-env'
 import { getAccessToken } from '../stravaAPI/getAccessToken.js'
 import { getActivities } from '../stravaAPI/getActivities.js'
 import { stravaToTimestream } from '../stravaToTimestream.js'
+import { teamList } from './teamList.js'
 
 const { tableInfo, clientID, clientSecret, refreshToken } = fromEnv({
 	tableInfo: 'TABLE_INFO', // db-S1mQFez6xa7o|table-RF9ZgR5BtR1K
@@ -24,10 +25,6 @@ const [dbName, tableName] = tableInfo.split('|') as [string, string]
 
 const ssm = new SSMClient({})
 const tsw = new TimestreamWriteClient({})
-
-const teamList = [
-	838205, 982093, 838211, 838207, 838209, 838203, 232813, 838200,
-]
 
 export const handler = async (): Promise<void> => {
 	const accessToken = await getAccessToken({
@@ -50,7 +47,7 @@ export const handler = async (): Promise<void> => {
 		startTimestamp = fallBackStartTimestamp
 	}
 
-	for (const team of teamList) {
+	for (const { id: team } of teamList) {
 		const data = await getActivities({
 			accessToken,
 			team,
