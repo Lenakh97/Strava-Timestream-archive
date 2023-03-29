@@ -4,11 +4,14 @@ import {
 	TimestreamWriteClient,
 	WriteRecordsCommand,
 } from '@aws-sdk/client-timestream-write'
+import { jest } from '@jest/globals'
 import { randomUUID } from 'crypto'
 import { getSummary, Summary } from './getSummary.js'
 import { stravaToTimestream } from './stravaToTimestream.js'
 import testData from './test-data/activities.json'
 import { weekNumber } from './weekNumber.js'
+
+jest.setTimeout(30 * 1000)
 
 const tsw = new TimestreamWriteClient({})
 const testDatabaseName = process.env.TEST_DB_NAME as string
@@ -104,6 +107,10 @@ describe('getSummary()', () => {
 					{ id: 43, name: 'Team B' },
 				],
 				StravaChallengeWeeks: [weekNumber(currentTime)],
+				memberCount: {
+					42: { memberCount: 3 },
+					43: { memberCount: 3 },
+				},
 			}),
 		).toMatchObject(expectedResult)
 	})

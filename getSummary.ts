@@ -1,8 +1,7 @@
 import { calculateHourlyPoints } from './calculateHourlyPoints.js'
 import { getDistanceForAllTeams } from './getDistanceForAllTeams.js'
-import { getMemberCount } from './getMemberCount.js'
+import type { TeamInfo } from './getMemberCount.js'
 import { getPointsForGraph } from './getPointsForGraph.js'
-
 import { getTotalDistance } from './getTotalDistance.js'
 import { getTotalHoursSpent } from './getTotalHoursSpent.js'
 import { getTotalTimePerClub } from './getTotalTimePerClub.js'
@@ -37,18 +36,16 @@ export const getSummary = async ({
 	DatabaseName,
 	TableName,
 	teamInfo,
+	memberCount,
 	StravaChallengeWeeks,
 }: {
 	DatabaseName: string
 	TableName: string
 	teamInfo: Team[]
+	memberCount: TeamInfo
 	StravaChallengeWeeks: number[]
 }): Promise<Summary> => {
 	const currentTime = new Date()
-	const memberCount = await getMemberCount({
-		DatabaseName: DatabaseName,
-		TableName: TableName,
-	})
 	let totDist = 0
 	let totHours = 0
 	const weeklyArray = [] as WeeklySummary[]

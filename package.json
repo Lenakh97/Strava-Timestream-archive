@@ -61,6 +61,7 @@
   },
   "dependencies": {
     "@nordicsemiconductor/from-env": "2.0.0",
+    "@nordicsemiconductor/timestream-helpers": "5.0.0",
     "date-fns": "2.29.3"
   }
 }
