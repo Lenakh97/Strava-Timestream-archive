@@ -1,59 +1,61 @@
-import { TimestreamQueryClient } from '@aws-sdk/client-timestream-query'
+import {
+	DynamoDBClient,
+	QueryCommand,
+	QueryCommandOutput,
+} from '@aws-sdk/client-dynamodb'
+import { unmarshall } from '@aws-sdk/util-dynamodb'
 import { fromEnv } from '@nordicsemiconductor/from-env'
 import type { APIGatewayProxyResultV2 } from 'aws-lambda'
-import { getMemberCount } from '../getMemberCount.js'
-import { getMemberCountScheduled } from '../getMemberCountScheduled.js'
-import { getSummary } from '../getSummary.js'
-import { teamList } from './teamList.js'
 
 export type StravaSummaryObject = {
 	distanceGoal: number
 	currentDistance: number
 }
 
-const { tableInfo, teamCountTable } = fromEnv({
-	tableInfo: 'TABLE_INFO', // db-S1mQFez6xa7o|table-RF9ZgR5BtR1K
-	teamCountTable: 'TEAM_COUNT_TABLE', // teamCountTable-OxGhPh8LwBoF
+const { cacheTableName } = fromEnv({
+	cacheTableName: 'CACHE_TABLE_NAME',
 })(process.env)
 
-const [dbName, tableName] = tableInfo.split('|') as [string, string]
-const tsq = new TimestreamQueryClient({})
+const db = new DynamoDBClient({})
 
-// Cache the member count in the execution context
-const memberCountPromise = (async () => {
-	const memberCountFromScheduledQuery = await getMemberCountScheduled({
-		tsq,
-		db: dbName,
-		table: teamCountTable,
-	})
-	if (Object.keys(memberCountFromScheduledQuery).length > 0)
-		return memberCountFromScheduledQuery
+const headers = {
+	'Access-Control-Allow-Headers': 'Content-Type',
+	'Access-Control-Allow-Origin': '*', // Allow from anywhere
+	'Access-Control-Allow-Methods': 'GET', // Allow only GET request
+}
 
-	return getMemberCount({
-		DatabaseName: dbName,
-		TableName: tableName,
-	})
-})()
+const summaryPromises: Record<string, Promise<QueryCommandOutput>> = {}
 
 export const handler = async (): Promise<APIGatewayProxyResultV2> => {
-	const StravaChallengeWeeks = [13, 14, 15, 16, 17]
+	// Cache results for 10 minutes
+	const key = new Date().toISOString().slice(0, 15) // 2022-12-14T11:1
+	if (summaryPromises[key] === undefined)
+		summaryPromises[key] = db.send(
+			new QueryCommand({
+				TableName: cacheTableName,
+				KeyConditionExpression: 'cacheKey = :cacheKey',
+				ExpressionAttributeValues: {
+					[':cacheKey']: {
+						S: 'strava-summary',
+					},
+				},
+				ProjectionExpression: 'summary',
+				ScanIndexForward: false,
+				Limit: 1,
+			}),
+		)
 
-	const memberCount = await memberCountPromise
+	const res = await (summaryPromises[key] as Promise<QueryCommandOutput>)
 
-	const summary = await getSummary({
-		DatabaseName: dbName,
-		TableName: tableName,
-		teamInfo: teamList,
-		StravaChallengeWeeks: StravaChallengeWeeks,
-		memberCount,
-	})
+	if (res.Items?.[0] === undefined) {
+		return {
+			statusCode: 404,
+			headers,
+		}
+	}
 	return {
 		statusCode: 200,
-		body: JSON.stringify(summary, null, 2),
-		headers: {
-			'Access-Control-Allow-Headers': 'Content-Type',
-			'Access-Control-Allow-Origin': '*', // Allow from anywhere
-			'Access-Control-Allow-Methods': 'GET', // Allow only GET request
-		},
+		body: JSON.stringify(unmarshall(res.Items[0]).summary, null, 2),
+		headers,
 	}
 }

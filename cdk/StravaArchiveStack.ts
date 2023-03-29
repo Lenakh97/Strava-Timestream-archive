@@ -1,4 +1,5 @@
 import CloudFormation, {
+	aws_dynamodb as DynamoDB,
 	aws_events as Events,
 	aws_events_targets as EventsTargets,
 	aws_iam as IAM,
@@ -44,13 +45,28 @@ export class StravaArchiveStack extends CloudFormation.Stack {
 			exportName: 'tableArn',
 		})
 
+		// Summary cache table
+		const summaryCacheTable = new DynamoDB.Table(this, 'summaryCacheDB', {
+			billingMode: DynamoDB.BillingMode.PAY_PER_REQUEST,
+			partitionKey: {
+				name: 'cacheKey',
+				type: DynamoDB.AttributeType.STRING,
+			},
+			sortKey: {
+				name: 'timestamp',
+				type: DynamoDB.AttributeType.STRING,
+			},
+			removalPolicy: CloudFormation.RemovalPolicy.DESTROY,
+			timeToLiveAttribute: 'ttl',
+		})
+
 		// Layer with dependencies for the lambdas
 		const layer = new Lambda.LayerVersion(this, `layer`, {
 			code: Lambda.Code.fromAsset(lambdas.layerZipFileName),
 			compatibleRuntimes: [Lambda.Runtime.NODEJS_18_X],
 		})
 
-		// Lambda that fetches activities and stores them in the DB
+		// Lambda that fetches activities and stores them in the DB, then writes the summary
 		const storeMessagesInTimestream = new Lambda.Function(
 			this,
 			'storeMessagesInTimestream',
@@ -63,7 +79,7 @@ export class StravaArchiveStack extends CloudFormation.Stack {
 				memorySize: 1792,
 				code: Lambda.Code.fromAsset(lambdas.lambdas.storeActivities.zipFile),
 				description:
-					'Fetches activities from Strava and stores them in Timestream',
+					'Fetches activities from Strava and stores them in Timestream, then writes the summary',
 				environment: {
 					TABLE_INFO: table.ref,
 					CLIENT_ID: SSM.StringParameter.valueForStringParameter(
@@ -78,6 +94,7 @@ export class StravaArchiveStack extends CloudFormation.Stack {
 						this,
 						'/strava/refreshToken',
 					),
+					CACHE_TABLE_NAME: summaryCacheTable.tableName,
 				},
 				initialPolicy: [
 					new IAM.PolicyStatement({
@@ -85,17 +102,30 @@ export class StravaArchiveStack extends CloudFormation.Stack {
 						resources: [table.attrArn],
 					}),
 					new IAM.PolicyStatement({
-						actions: ['timestream:DescribeEndpoints'],
+						actions: [
+							'timestream:DescribeEndpoints',
+							'timestream:SelectValues',
+							'timestream:CancelQuery',
+						],
 						resources: ['*'],
 					}),
 					new IAM.PolicyStatement({
 						actions: ['ssm:GetParameter', 'ssm:PutParameter'],
 						resources: ['arn:aws:ssm:*:*:parameter/strava/*'],
 					}),
+					new IAM.PolicyStatement({
+						actions: [
+							'timestream:Select',
+							'timestream:DescribeTable',
+							'timestream:ListMeasures',
+						],
+						resources: [table.attrArn],
+					}),
 				],
 				logRetention: RetentionDays.ONE_WEEK,
 			},
 		)
+		summaryCacheTable.grantFullAccess(storeMessagesInTimestream)
 
 		// Execute the lambda every hour
 		const rule = new Events.Rule(this, 'InvokeActivitiesRule', {
@@ -116,34 +146,16 @@ export class StravaArchiveStack extends CloudFormation.Stack {
 			handler: lambdas.lambdas.summaryAPI.handler,
 			architecture: Lambda.Architecture.ARM_64,
 			runtime: Lambda.Runtime.NODEJS_18_X,
-			timeout: CloudFormation.Duration.minutes(1),
+			timeout: CloudFormation.Duration.seconds(1),
 			memorySize: 1792,
 			code: Lambda.Code.fromAsset(lambdas.lambdas.summaryAPI.zipFile),
-			description: 'Prepare reports from and provide them via a REST API',
+			description: 'Return reports via a REST API',
 			environment: {
-				TABLE_INFO: table.ref,
-				TEAM_COUNT_TABLE: teamCount.table.attrName,
+				CACHE_TABLE_NAME: summaryCacheTable.tableName,
 			},
-			initialPolicy: [
-				new IAM.PolicyStatement({
-					actions: [
-						'timestream:Select',
-						'timestream:DescribeTable',
-						'timestream:ListMeasures',
-					],
-					resources: [table.attrArn, teamCount.table.attrArn],
-				}),
-				new IAM.PolicyStatement({
-					actions: [
-						'timestream:DescribeEndpoints',
-						'timestream:SelectValues',
-						'timestream:CancelQuery',
-					],
-					resources: ['*'],
-				}),
-			],
 			logRetention: RetentionDays.ONE_WEEK,
 		})
+		summaryCacheTable.grantReadData(summaryAPI)
 
 		const url = summaryAPI.addFunctionUrl({
 			authType: Lambda.FunctionUrlAuthType.NONE,
