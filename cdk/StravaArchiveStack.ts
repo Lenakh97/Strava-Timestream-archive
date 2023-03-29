@@ -2,8 +2,6 @@ import CloudFormation, {
 	aws_events as Events,
 	aws_events_targets as EventsTargets,
 	aws_iam as IAM,
-	aws_s3 as S3,
-	aws_sns as SNS,
 	aws_ssm as SSM,
 } from 'aws-cdk-lib'
 import type { IPrincipal } from 'aws-cdk-lib/aws-iam'
@@ -11,6 +9,7 @@ import Lambda from 'aws-cdk-lib/aws-lambda'
 import { RetentionDays } from 'aws-cdk-lib/aws-logs'
 import Timestream from 'aws-cdk-lib/aws-timestream'
 import type { StravaArchiveLambdas } from './lambdas'
+import { TeamCountScheduledQuery } from './TeamCountScheduledQuery'
 
 export class StravaArchiveStack extends CloudFormation.Stack {
 	public constructor(
@@ -32,105 +31,8 @@ export class StravaArchiveStack extends CloudFormation.Stack {
 				MagneticStoreRetentionPeriodInDays: '365',
 			},
 		})
-		const teamCountTable = new Timestream.CfnTable(this, 'teamCountTable', {
-			databaseName: db.ref,
-			retentionProperties: {
-				MemoryStoreRetentionPeriodInHours: '24',
-				MagneticStoreRetentionPeriodInDays: '7',
-			},
-		})
 
-		const timestreamErrorBucket = new S3.Bucket(this, 'timestreamErrorBucket')
-		const timestreamSNSTopic = new SNS.Topic(this, 'timestreamSNSTopic')
-
-		const timestreamPolicy = new IAM.Policy(this, 'timestreamPolicy')
-		const timestreamRole = new IAM.Role(this, 'timestreamRole', {
-			assumedBy: new IAM.ServicePrincipal('timestream.amazonaws.com'),
-		})
-		timestreamRole.attachInlinePolicy(timestreamPolicy)
-		timestreamPolicy.addStatements(
-			new IAM.PolicyStatement({
-				actions: [
-					'timestream:Select',
-					'timestream:DescribeTable',
-					'timestream:ListMeasures',
-				],
-				resources: [table.attrArn],
-			}),
-		)
-		timestreamPolicy.addStatements(
-			new IAM.PolicyStatement({
-				actions: [
-					'timestream:DescribeEndpoints',
-					'timestream:SelectValues',
-					'timestream:CancelQuery',
-				],
-				resources: ['*'],
-			}),
-		)
-		timestreamPolicy.addStatements(
-			new IAM.PolicyStatement({
-				actions: ['timestream:WriteRecords'],
-				resources: [teamCountTable.attrArn],
-			}),
-		)
-		timestreamErrorBucket.grantWrite(timestreamRole)
-		timestreamPolicy.addStatements(
-			new IAM.PolicyStatement({
-				actions: ['s3:GetBucketAcl'],
-				resources: [timestreamErrorBucket.bucketArn],
-			}),
-		)
-		timestreamSNSTopic.grantPublish(timestreamPolicy)
-
-		const teamMemberCountQuery = new Timestream.CfnScheduledQuery(
-			this,
-			'teamMemberCountQuery',
-			{
-				queryString: `SELECT Team as teamId, COUNT (DISTINCT athlete) as memberCount, bin(now(), 1d) as day FROM "${db.ref}"."${table.attrName}" GROUP BY Team`,
-				errorReportConfiguration: {
-					s3Configuration: {
-						bucketName: timestreamErrorBucket.bucketName,
-					},
-				},
-				notificationConfiguration: {
-					snsConfiguration: {
-						topicArn: timestreamSNSTopic.topicArn,
-					},
-				},
-				scheduleConfiguration: {
-					scheduleExpression: 'rate(1 day)',
-				},
-				scheduledQueryExecutionRoleArn: timestreamRole.roleArn,
-				targetConfiguration: {
-					timestreamConfiguration: {
-						databaseName: db.ref,
-						tableName: teamCountTable.attrName,
-						timeColumn: 'day',
-						dimensionMappings: [
-							{
-								name: 'teamId',
-								dimensionValueType: 'VARCHAR',
-							},
-						],
-						multiMeasureMappings: {
-							targetMultiMeasureName: 'memberCount',
-							multiMeasureAttributeMappings: [
-								{
-									sourceColumn: 'memberCount',
-									measureValueType: 'BIGINT',
-								},
-							],
-						},
-					},
-				},
-			},
-		)
-
-		teamMemberCountQuery.node.addDependency(timestreamPolicy)
-		teamMemberCountQuery.addDependency(teamCountTable)
-		teamMemberCountQuery.node.addDependency(timestreamSNSTopic)
-		teamMemberCountQuery.node.addDependency(timestreamErrorBucket)
+		const teamCount = new TeamCountScheduledQuery(this, db, table)
 
 		new CloudFormation.CfnOutput(this, 'tableInfo', {
 			value: table.ref,
@@ -220,7 +122,7 @@ export class StravaArchiveStack extends CloudFormation.Stack {
 			description: 'Prepare reports from and provide them via a REST API',
 			environment: {
 				TABLE_INFO: table.ref,
-				TEAM_COUNT_TABLE: teamCountTable.attrName,
+				TEAM_COUNT_TABLE: teamCount.table.attrName,
 			},
 			initialPolicy: [
 				new IAM.PolicyStatement({
@@ -229,7 +131,7 @@ export class StravaArchiveStack extends CloudFormation.Stack {
 						'timestream:DescribeTable',
 						'timestream:ListMeasures',
 					],
-					resources: [table.attrArn, teamCountTable.attrArn],
+					resources: [table.attrArn, teamCount.table.attrArn],
 				}),
 				new IAM.PolicyStatement({
 					actions: [
