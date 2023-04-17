@@ -33,7 +33,7 @@ const ssm = new SSMClient({})
 const tsw = new TimestreamWriteClient({})
 const db = new DynamoDBClient({})
 
-const StravaChallengeWeeks = [13, 14, 15, 16, 17]
+const StravaChallengeWeeks = [16, 17, 18, 19]
 
 export const handler = async (): Promise<void> => {
 	const accessToken = await getAccessToken({
