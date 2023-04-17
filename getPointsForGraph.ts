@@ -35,7 +35,7 @@ export const getPointsForGraph = async ({
                     CASE
                         WHEN activity_type = 'Ride' 
                             OR activity_type = 'VirtualRide' 
-                            OR activity_type = 'VirtualRide' 
+                            OR activity_type = 'GravelRide' 
                             OR activity_type = 'RollerSki' 
                             OR activity_type = 'NordicSki'
                             OR activity_type = 'BackCountrySki'
