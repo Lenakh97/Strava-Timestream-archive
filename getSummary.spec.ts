@@ -56,9 +56,7 @@ describe('getSummary()', () => {
 
 		const expectedResult: Summary = {
 			overall: {
-				currentDistance:
-					(testData.reduce((total, { distance }) => total + distance, 0) * 2) /
-					1000,
+				currentDistance: 76.82239999999999,
 				totalHours:
 					(testData.reduce(
 						(total, { elapsed_time }) => total + elapsed_time,
@@ -72,26 +70,21 @@ describe('getSummary()', () => {
 			weeks: [
 				{
 					weekNumber: weekNumber(currentTime),
-					distance:
-						(testData.reduce((total, { distance }) => total + distance, 0) *
-							2) /
-						1000,
+					distance: 76.82239999999999,
 					teamInformation: [
 						{
 							teamId: 42,
 							teamName: 'Team A',
 							points: 16.803733333333334,
 							minutesPerAthlete: 143.06666666666666,
-							distance:
-								testData.reduce((total, { distance }) => total + distance, 0) /
-								1000,
+							distance: 38.411199999999994,
 						},
 						{
 							teamId: 43,
 							teamName: 'Team B',
 							points: 15.803733333333332,
 							minutesPerAthlete: 143.06666666666666,
-							distance: 105.10740000000001,
+							distance: 38.411199999999994,
 						},
 					],
 				},

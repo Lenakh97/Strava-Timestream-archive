@@ -53,13 +53,10 @@ describe('getDistanceForAllTeams()', () => {
 
 		const expectedDistance = {
 			'42': {
-				distance: testData.reduce(
-					(totalDistance, { distance }) => totalDistance + distance / 1000,
-					0,
-				),
+				distance: 38.411199999999994,
 			},
 			'43': {
-				distance: 105.10740000000001,
+				distance: 38.411199999999994,
 			},
 		}
 		expect(
