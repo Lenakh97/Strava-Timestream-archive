@@ -128,30 +128,36 @@ export class StravaArchiveStack extends CloudFormation.Stack {
 		summaryCacheTable.grantFullAccess(storeMessagesInTimestream)
 
 		//Lambda function for sending email with weekly winners
-		const sendEmail = new Lambda.Function(this, 'sendEmail', {
-			layers: [layer],
-			handler: lambdas.lambdas.sendEmail.handler,
-			architecture: Lambda.Architecture.ARM_64,
-			runtime: Lambda.Runtime.NODEJS_18_X,
-			timeout: CloudFormation.Duration.minutes(10),
-			memorySize: 1792,
-			code: Lambda.Code.fromAsset(lambdas.lambdas.sendEmail.zipFile),
-			description: 'Send Email with winners',
-			initialPolicy: [
-				new IAM.PolicyStatement({
-					actions: ['ses:sendEmail', 'ses:SendRawEmail'],
-					resources: ['*'],
-				}),
-				new IAM.PolicyStatement({
-					actions: ['timestream:DescribeEndpoints', 'timestream:Select'],
-					resources: ['*'],
-				}),
-			],
-			environment: {
-				TABLE_INFO: table.ref,
+		const sendEmailWithTopDistAndTime = new Lambda.Function(
+			this,
+			'sendEmailWithTopDistAndTime',
+			{
+				layers: [layer],
+				handler: lambdas.lambdas.sendEmailWithTopDistAndTime.handler,
+				architecture: Lambda.Architecture.ARM_64,
+				runtime: Lambda.Runtime.NODEJS_18_X,
+				timeout: CloudFormation.Duration.minutes(10),
+				memorySize: 1792,
+				code: Lambda.Code.fromAsset(
+					lambdas.lambdas.sendEmailWithTopDistAndTime.zipFile,
+				),
+				description: 'Send Email with winners',
+				initialPolicy: [
+					new IAM.PolicyStatement({
+						actions: ['ses:sendEmailWithTopDistAndTime', 'ses:SendRawEmail'],
+						resources: ['*'],
+					}),
+					new IAM.PolicyStatement({
+						actions: ['timestream:DescribeEndpoints', 'timestream:Select'],
+						resources: ['*'],
+					}),
+				],
+				environment: {
+					TABLE_INFO: table.ref,
+				},
+				logRetention: RetentionDays.ONE_WEEK,
 			},
-			logRetention: RetentionDays.ONE_WEEK,
-		})
+		)
 		// Execute the lambda every hour
 		const rule = new Events.Rule(this, 'InvokeActivitiesRule', {
 			schedule: Events.Schedule.expression('rate(1 hour)'),
@@ -159,7 +165,7 @@ export class StravaArchiveStack extends CloudFormation.Stack {
 			enabled: true,
 			targets: [
 				new EventsTargets.LambdaFunction(storeMessagesInTimestream),
-				//new EventsTargets.LambdaFunction(sendEmail),
+				//new EventsTargets.LambdaFunction(sendEmailWithTopDistAndTime),
 			],
 		})
 
@@ -168,7 +174,7 @@ export class StravaArchiveStack extends CloudFormation.Stack {
 			sourceArn: rule.ruleArn,
 		})
 
-		sendEmail.addPermission('InvokeByEvents', {
+		sendEmailWithTopDistAndTime.addPermission('InvokeByEvents', {
 			principal: new IAM.ServicePrincipal('events.amazonaws.com') as IPrincipal,
 			sourceArn: rule.ruleArn,
 		})
