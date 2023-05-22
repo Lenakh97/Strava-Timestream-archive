@@ -159,7 +159,7 @@ export class StravaArchiveStack extends CloudFormation.Stack {
 			enabled: true,
 			targets: [
 				new EventsTargets.LambdaFunction(storeMessagesInTimestream),
-				new EventsTargets.LambdaFunction(sendEmail),
+				//new EventsTargets.LambdaFunction(sendEmail),
 			],
 		})
 
