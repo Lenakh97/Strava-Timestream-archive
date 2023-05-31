@@ -127,7 +127,7 @@ export class StravaArchiveStack extends CloudFormation.Stack {
 		)
 		summaryCacheTable.grantFullAccess(storeMessagesInTimestream)
 
-		//Lambda function for sending email with weekly winners
+		//Lambda function for sending email with total distance and time
 		const sendEmailWithTopDistAndTime = new Lambda.Function(
 			this,
 			'sendEmailWithTopDistAndTime',
@@ -144,7 +144,39 @@ export class StravaArchiveStack extends CloudFormation.Stack {
 				description: 'Send Email with winners',
 				initialPolicy: [
 					new IAM.PolicyStatement({
-						actions: ['ses:sendEmailWithTopDistAndTime', 'ses:SendRawEmail'],
+						actions: ['ses:SendEmail', 'ses:SendRawEmail'],
+						resources: ['*'],
+					}),
+					new IAM.PolicyStatement({
+						actions: ['timestream:DescribeEndpoints', 'timestream:Select'],
+						resources: ['*'],
+					}),
+				],
+				environment: {
+					TABLE_INFO: table.ref,
+				},
+				logRetention: RetentionDays.ONE_WEEK,
+			},
+		)
+
+		//Lambda function for sending email with random weekly winners
+		const sendEmailWithRandomWinners = new Lambda.Function(
+			this,
+			'sendEmailWithRandomWinners',
+			{
+				layers: [layer],
+				handler: lambdas.lambdas.sendEmailWithRandomWinners.handler,
+				architecture: Lambda.Architecture.ARM_64,
+				runtime: Lambda.Runtime.NODEJS_18_X,
+				timeout: CloudFormation.Duration.minutes(10),
+				memorySize: 1792,
+				code: Lambda.Code.fromAsset(
+					lambdas.lambdas.sendEmailWithRandomWinners.zipFile,
+				),
+				description: 'Send Email with winners',
+				initialPolicy: [
+					new IAM.PolicyStatement({
+						actions: ['ses:SendEmail', 'ses:SendRawEmail'],
 						resources: ['*'],
 					}),
 					new IAM.PolicyStatement({
@@ -175,6 +207,10 @@ export class StravaArchiveStack extends CloudFormation.Stack {
 		})
 
 		sendEmailWithTopDistAndTime.addPermission('InvokeByEvents', {
+			principal: new IAM.ServicePrincipal('events.amazonaws.com') as IPrincipal,
+			sourceArn: rule.ruleArn,
+		})
+		sendEmailWithRandomWinners.addPermission('InvokeByEvents', {
 			principal: new IAM.ServicePrincipal('events.amazonaws.com') as IPrincipal,
 			sourceArn: rule.ruleArn,
 		})
