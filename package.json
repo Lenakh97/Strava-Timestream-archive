@@ -62,7 +62,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "3.473.0",
-    "@nordicsemiconductor/from-env": "2.0.0",
+    "@nordicsemiconductor/from-env": "3.0.0",
     "@nordicsemiconductor/timestream-helpers": "6.0.1",
     "date-fns": "2.29.3"
   }
