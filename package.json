@@ -20,7 +20,7 @@
     "@types/aws-lambda": "^8.10.114",
     "@types/jest": "29.4.0",
     "@types/yazl": "2.4.2",
-    "@typescript-eslint/eslint-plugin": "5.54.1",
+    "@typescript-eslint/eslint-plugin": "5.62.0",
     "aws-cdk": "2.114.1",
     "aws-cdk-lib": "2.114.1",
     "cdk": "2.114.1",
