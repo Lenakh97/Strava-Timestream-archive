@@ -13,7 +13,7 @@
     "@aws-sdk/client-timestream-query": "3.474.0",
     "@aws-sdk/client-timestream-write": "3.474.0",
     "@aws-sdk/util-dynamodb": "3.474.0",
-    "@nordicsemiconductor/asset-tracker-cloud-code-style": "13.1.4",
+    "@nordicsemiconductor/asset-tracker-cloud-code-style": "13.1.5",
     "@nordicsemiconductor/eslint-config-asset-tracker-cloud-typescript": "17.0.0",
     "@swc/cli": "0.1.63",
     "@swc/jest": "0.2.29",
