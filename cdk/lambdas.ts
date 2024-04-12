@@ -9,6 +9,7 @@ export type StravaArchiveLambdas = {
 		storeActivities: PackedLambda
 		summaryAPI: PackedLambda
 		sendEmailWithTopDistAndTime: PackedLambda
+		sendEmailWithRandomWinners: PackedLambda
 	}
 }
 
@@ -32,6 +33,10 @@ export const prepareStravaArchiveLambdas =
 			sendEmailWithTopDistAndTime: await packLambdaFromPath(
 				'sendEmailWithTopDistAndTime',
 				'lambdas/sendEmailWithTopDistAndTime.ts',
+			),
+			sendEmailWithRandomWinners: await packLambdaFromPath(
+				'sendEmailWithRandomWinners',
+				'lambdas/sendEmailWithRandomWinners.ts',
 			),
 		},
 	})

@@ -49,8 +49,6 @@ export const getRandomWeeklyWinners = async ({
 		const winnersArray = [] as string[]
 
 		for (let person = 0; person < 5; person++) {
-			console.log('athleteArray', arrayOfAthletes)
-
 			if (arrayOfAthletes.length === 0) {
 				continue
 			}
