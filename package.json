@@ -9,6 +9,7 @@
   "author": "Nordic Semiconductor ASA | nordicsemi.no",
   "license": "BSD-3-Clause",
   "devDependencies": {
+    "@aws-sdk/client-ses": "3.554.0",
     "@aws-sdk/client-ssm": "3.474.0",
     "@aws-sdk/client-timestream-query": "3.474.0",
     "@aws-sdk/client-timestream-write": "3.474.0",
