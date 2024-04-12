@@ -60,26 +60,6 @@ export const handler = async (): Promise<any> => {
 	})
 	const winners = JSON.stringify(topDistAndTimeAthletes)
 	const parsed = JSON.parse(winners)
-	console.log(Object.values(parsed['232813'].distance))
-	/*const content =
-		`Top athletes` +
-		'<br> <b>Omega:</b> ' +
-		Object.values(parsed['232813']).slice(0, 3) +
-		'<br> <b>Oslo:</b>' +
-		Object.values(parsed['838200']).slice(0, 3) +
-		'<br> <b>Trondheim:</b>' +
-		Object.values(parsed['838203']).slice(0, 3) +
-		'<br> <b>Finland: </b>' +
-		Object.values(parsed['838205']).slice(0, 3) +
-		'<br> <b>APAC: </b>' +
-		Object.values(parsed['838207']).slice(0, 3) +
-		'<br> <b>USA: </b>' +
-		Object.values(parsed['838209']).slice(0, 3) +
-		'<br> <b>Europe:</b>' +
-		Object.values(parsed['838211']).slice(0, 3) +
-		'<br> <b>Poland:</b>' +
-		Object.values(parsed['982093']).slice(0, 3)*/
-	//console.log(JSON.stringify(content))
 	const sendEmailCommand = createSendEmailCommand(
 		'lena.haraldseid@nordicsemi.no',
 		'lena.haraldseid@nordicsemi.no',
