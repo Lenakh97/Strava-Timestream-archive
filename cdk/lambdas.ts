@@ -8,7 +8,7 @@ export type StravaArchiveLambdas = {
 	lambdas: {
 		storeActivities: PackedLambda
 		summaryAPI: PackedLambda
-		sendEmail: PackedLambda
+		sendEmailWithTopDistAndTime: PackedLambda
 	}
 }
 
@@ -29,6 +29,9 @@ export const prepareStravaArchiveLambdas =
 				'summaryAPI',
 				'lambdas/summaryAPI.ts',
 			),
-			sendEmail: await packLambdaFromPath('sendEmail', 'lambdas/sendEmail.ts'),
+			sendEmailWithTopDistAndTime: await packLambdaFromPath(
+				'sendEmailWithTopDistAndTime',
+				'lambdas/sendEmailWithTopDistAndTime.ts',
+			),
 		},
 	})
