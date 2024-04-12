@@ -27,6 +27,7 @@ export type Summary = {
 		distanceGoal: number
 		currentDistance: number
 		totalHours: number
+		teamInfo: TeamInfo
 	}
 	weeks: WeeklySummary[]
 }
@@ -47,6 +48,11 @@ export const getSummary = async ({
 	let totDist = 0
 	let totHours = 0
 	const weeklyArray = [] as WeeklySummary[]
+	const teamInfoMembers = {} as TeamInfo
+	for (const team of teamInfo) {
+		const teamName = team.name
+		teamInfoMembers[teamName] = memberCount[team.id] ?? { memberCount: 0 }
+	}
 	for (const week of StravaChallengeWeeks) {
 		const teamInfoArray = [] as TeamInformation
 		const timePerAthlete = await getTotalTimePerClub({
@@ -104,6 +110,7 @@ export const getSummary = async ({
 			distanceGoal: 15726.7,
 			currentDistance: totDist,
 			totalHours: totHours,
+			teamInfo: teamInfoMembers,
 		},
 		weeks: weeklyArray,
 	}
