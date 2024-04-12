@@ -2,14 +2,14 @@ import type { Team } from 'lambdas/teamList.js'
 
 export const JsonToEmailFormat = (
 	winnersObject: {
-		'232813': string[]
-		'838200': string[]
-		'838203': string[]
-		'838205': string[]
-		'838207': string[]
-		'838209': string[]
-		'838211': string[]
-		'982093': string[]
+		'1174791': string[]
+		'1174162': string[]
+		'1174140': string[]
+		'1174164': string[]
+		'1174167': string[]
+		'1174168': string[]
+		'1174166': string[]
+		'1174165': string[]
 	},
 	teamList: Team[],
 ): string => {
