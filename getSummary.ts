@@ -6,7 +6,6 @@ import { getTotalDistance } from './getTotalDistance.js'
 import { getTotalHoursSpent } from './getTotalHoursSpent.js'
 import { getTotalTimePerClub } from './getTotalTimePerClub.js'
 import type { Team } from './lambdas/teamList.js'
-import { weekNumber } from './weekNumber.js'
 
 export type WeeklySummary = {
 	weekNumber: number
@@ -45,7 +44,6 @@ export const getSummary = async ({
 	memberCount: TeamInfo
 	StravaChallengeWeeks: number[]
 }): Promise<Summary> => {
-	const currentTime = new Date()
 	let totDist = 0
 	let totHours = 0
 	const weeklyArray = [] as WeeklySummary[]
@@ -98,7 +96,7 @@ export const getSummary = async ({
 		totHours += await getTotalHoursSpent({
 			DatabaseName: DatabaseName,
 			TableName: TableName,
-			weekNumber: weekNumber(currentTime),
+			weekNumber: week,
 		})
 	}
 	return {
