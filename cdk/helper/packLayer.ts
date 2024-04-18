@@ -1,7 +1,7 @@
 import { spawn } from 'child_process'
 import { createWriteStream } from 'fs'
 import { copyFile, mkdir, readFile, rm, writeFile } from 'fs/promises'
-import glob from 'glob'
+import { glob } from 'glob'
 import path from 'path'
 import { ZipFile } from 'yazl'
 
@@ -31,17 +31,20 @@ export const packLayer = async ({
 
 	await mkdir(nodejsDir, { recursive: true })
 
-	const depsToBeInstalled = dependencies.reduce((resolved, dep) => {
-		const resolvedDependency = deps[dep] ?? devDeps[dep]
-		if (resolvedDependency === undefined)
-			throw new Error(
-				`Could not resolve dependency "${dep}" in ${packageJsonFile}!`,
-			)
-		return {
-			...resolved,
-			[dep]: resolvedDependency,
-		}
-	}, {} as Record<string, string>)
+	const depsToBeInstalled = dependencies.reduce(
+		(resolved, dep) => {
+			const resolvedDependency = deps[dep] ?? devDeps[dep]
+			if (resolvedDependency === undefined)
+				throw new Error(
+					`Could not resolve dependency "${dep}" in ${packageJsonFile}!`,
+				)
+			return {
+				...resolved,
+				[dep]: resolvedDependency,
+			}
+		},
+		{} as Record<string, string>,
+	)
 
 	await writeFile(
 		path.join(nodejsDir, 'package.json'),
