@@ -14,6 +14,7 @@
     "@aws-sdk/client-timestream-query": "3.474.0",
     "@aws-sdk/client-timestream-write": "3.474.0",
     "@aws-sdk/util-dynamodb": "3.474.0",
+    "@bifravst/eslint-config-typescript": "6.0.23",
     "@nordicsemiconductor/asset-tracker-cloud-code-style": "13.1.5",
     "@nordicsemiconductor/eslint-config-asset-tracker-cloud-typescript": "17.0.0",
     "@swc/cli": "0.1.63",
@@ -21,7 +22,6 @@
     "@types/aws-lambda": "^8.10.130",
     "@types/jest": "29.5.11",
     "@types/yazl": "2.4.5",
-    "@typescript-eslint/eslint-plugin": "6.14.0",
     "aws-cdk": "2.115.0",
     "aws-cdk-lib": "2.115.0",
     "cdk": "2.115.0",
@@ -47,7 +47,7 @@
       ".ts"
     ]
   },
-  "prettier": "@nordicsemiconductor/asset-tracker-cloud-code-style/.prettierrc",
+  "prettier": "@bifravst/prettier-config",
   "engines": {
     "node": ">=18",
     "npm": ">=9"
@@ -58,11 +58,12 @@
     ],
     "*.{ts,tsx}": [
       "prettier --write",
-      "eslint --ext .js,.ts"
+      "eslint"
     ]
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "3.474.0",
+    "@bifravst/prettier-config": "^1.0.0",
     "@nordicsemiconductor/from-env": "3.0.0",
     "@nordicsemiconductor/timestream-helpers": "6.0.1",
     "date-fns": "2.30.0"
