@@ -3,12 +3,12 @@ export type Team = {
 	name: string
 }
 export const teamList: Team[] = [
-	{ id: 838205, name: 'Finland' },
-	{ id: 982093, name: 'Poland' },
-	{ id: 838211, name: 'Europe' },
-	{ id: 838207, name: 'APAC' },
-	{ id: 838209, name: 'USA' },
-	{ id: 838203, name: 'Trondheim' },
-	{ id: 232813, name: 'Omega' },
-	{ id: 838200, name: 'Oslo' },
+	{ id: 1174164, name: 'Finland' },
+	{ id: 1174165, name: 'Poland' },
+	{ id: 1174166, name: 'Europe' },
+	{ id: 1174167, name: 'APAC' },
+	{ id: 1174168, name: 'USA' },
+	{ id: 1174140, name: 'Trondheim' },
+	{ id: 1174791, name: 'Omega' },
+	{ id: 1174162, name: 'Oslo' },
 ]
