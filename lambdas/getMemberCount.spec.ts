@@ -5,10 +5,9 @@ import {
 	WriteRecordsCommand,
 } from '@aws-sdk/client-timestream-write'
 import { randomUUID } from 'crypto'
-import { getPointsForGraph } from './getPointsForGraph.js'
-import { stravaToTimestream } from './stravaToTimestream.js'
-import testData from './test-data/activities.json'
-import { weekNumber } from './weekNumber'
+import { getMemberCount } from './getMemberCount.js'
+import { stravaToTimestream } from './storeActivities/stravaToTimestream.js'
+import testData from '../test-data/activities.json'
 
 const tsw = new TimestreamWriteClient({})
 const testDatabaseName = process.env.TEST_DB_NAME as string
@@ -33,8 +32,8 @@ afterAll(async () => {
 	)
 })
 
-describe('getPointsForGraph()', () => {
-	it('should return points for each team to use in Graph', async () => {
+describe('getMemberCount()', () => {
+	it('should return the member count for the given club', async () => {
 		// Fill Timestream table with test data
 		await tsw.send(
 			new WriteRecordsCommand({
@@ -50,30 +49,17 @@ describe('getPointsForGraph()', () => {
 				Records: stravaToTimestream(43, currentTime, testData),
 			}),
 		)
-		//points = total distance (which is divided by a number based on activity) divided by active atlethes in the club
-		const expectedGraphPoints = {
-			'42': { points: 16.803733333333334 },
-			'43': { points: 14.803733333333332 },
+
+		const expectedMemberCount = {
+			'42': { memberCount: 3 },
+			'43': { memberCount: 3 },
 		}
 
 		expect(
-			await getPointsForGraph({
+			await getMemberCount({
 				DatabaseName: testDatabaseName,
 				TableName: testTableName,
-				teamInfo: {
-					'42': { memberCount: 3 },
-					'43': { memberCount: 3 },
-				},
-				teamInfoTime: {
-					'42': { minutesPerAthlete: 143.06666666666666 },
-					'43': { minutesPerAthlete: 143.06666666666666 },
-				},
-				teamInfoHourlyPoints: {
-					'42': { hourlyPoints: 4 },
-					'43': { hourlyPoints: 2 },
-				},
-				weekNumber: weekNumber(currentTime),
 			}),
-		).toEqual(expectedGraphPoints)
+		).toEqual(expectedMemberCount)
 	})
 })

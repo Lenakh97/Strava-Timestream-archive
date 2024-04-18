@@ -1,10 +1,10 @@
 import { SESClient } from '@aws-sdk/client-ses'
 import { fromEnv } from '@nordicsemiconductor/from-env'
-import { createSendEmailCommand } from '../createSendEmailCommand.js'
-import { getRandomWeeklyWinners } from '../getRandomWeeklyWinners.js'
-import { JsonToEmailFormat } from '../JsonToEmailFormat.js'
+import { createSendEmailCommand } from './createSendEmailCommand.js'
+import { getRandomWeeklyWinners } from './getRandomWeeklyWinners.js'
+import { JsonToEmailFormat, WinnersObject } from './JsonToEmailFormat.js'
 import { weekNumber } from '../weekNumber.js'
-import { teamList } from './teamList.js'
+import { teamList } from '../teamList.js'
 
 const ses = new SESClient({})
 const { tableInfo } = fromEnv({
@@ -21,11 +21,12 @@ export const handler = async (): Promise<any> => {
 		weekNumber: weekNumber(currentTime),
 	})
 	const winners = JSON.stringify(randomWinners, null, 2)
-	const parsed = JSON.parse(winners)
+	const parsed = JSON.parse(winners) as WinnersObject
 	const content = JsonToEmailFormat(parsed, teamList)
 	const sendEmailCommand = createSendEmailCommand(
 		'lena.haraldseid@nordicsemi.no',
-		'lena.haraldseid@nordicsemi.no',
+		'lenaharaldseid@gmail.com',
+
 		content,
 		`Random winners week ${weekNumber(currentTime)}`,
 	)

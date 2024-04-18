@@ -5,10 +5,10 @@ import {
 	WriteRecordsCommand,
 } from '@aws-sdk/client-timestream-write'
 import { randomUUID } from 'crypto'
-import { getTopDistanceAndTimeAthlete } from './getTopDistanceAndTimeAthlete.js'
+import { getDistanceForAllTeams } from './getDistanceForAllTeams.js'
 import { stravaToTimestream } from './stravaToTimestream.js'
-import testData from './test-data/activities2.json'
-import testData2 from './test-data/activities3.json'
+import testData from '../../test-data/activities.json'
+import { weekNumber } from '../weekNumber.js'
 
 const tsw = new TimestreamWriteClient({})
 const testDatabaseName = process.env.TEST_DB_NAME as string
@@ -33,8 +33,8 @@ afterAll(async () => {
 	)
 })
 
-describe('getTopDistanceAndTimeAthlete()', () => {
-	it('should return the total distance', async () => {
+describe('getDistanceForAllTeams()', () => {
+	it('should return the total distance for teams', async () => {
 		// Fill Timestream table with test data
 		await tsw.send(
 			new WriteRecordsCommand({
@@ -47,31 +47,24 @@ describe('getTopDistanceAndTimeAthlete()', () => {
 			new WriteRecordsCommand({
 				DatabaseName: testDatabaseName,
 				TableName: testTableName,
-				Records: stravaToTimestream(43, currentTime, testData2),
+				Records: stravaToTimestream(43, currentTime, testData),
 			}),
 		)
 
-		const expectedTopDistanceAthlete = {
+		const expectedDistance = {
 			'42': {
-				'Alex L.': { distance: 20.749533333333333, time: 4.425555555555556 },
-				'Eduardo M.': { distance: 17.386966666666667, time: 4.418611111111111 },
-				'Murat B.': { distance: 6.7508, time: 1.0438888888888889 },
+				distance: 38.411199999999994,
 			},
 			'43': {
-				'Alex L.': { distance: 20.749533333333333, time: 4.425555555555556 },
-				'Eduardo M.': { distance: 17.386966666666667, time: 4.418611111111111 },
-				'Ola B.': { distance: 6.7508, time: 1.0438888888888889 },
+				distance: 38.411199999999994,
 			},
 		}
 		expect(
-			await getTopDistanceAndTimeAthlete({
+			await getDistanceForAllTeams({
 				DatabaseName: testDatabaseName,
 				TableName: testTableName,
+				weekNumber: weekNumber(currentTime),
 			}),
-		).toEqual(expectedTopDistanceAthlete)
+		).toEqual(expectedDistance)
 	})
 })
-export type AthleteDistanceInfo = Record<
-	string,
-	{ distance: number; time: number }
->

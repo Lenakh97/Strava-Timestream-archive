@@ -1,5 +1,5 @@
 import { JsonToEmailFormat } from './JsonToEmailFormat.js'
-import { teamList } from './lambdas/teamList.js'
+import { teamList } from '../teamList.js'
 
 describe('getRandomWeeklyWinners()', () => {
 	const string = {
@@ -24,7 +24,7 @@ describe('getRandomWeeklyWinners()', () => {
 			'Jędrzej C.',
 		],
 	}
-	it('should make string pretty for email sending', async () => {
+	it('should make string pretty for email sending', () => {
 		// Fill Timestream table with test data
 		const expectedString =
 			'<b>Trondheim</b><br>Lee F.<br>Tore A.<br>Jovy S.<br>Kyrre G.<br>David Wæraas B.<br><b>Oslo</b><br>Gregers R.<br>vetle B.<br>Lee F.<br>David D.<br><b>Finland</b><br>Kirsi-Marja L.<br>Tiago M.<br>Risto H.<br>Lee F.<br>Petri K.<br><b>Poland</b><br>Andrzej B.<br>Adam S.<br>Marcin G.<br>Hubert M.<br>Jędrzej C.<br><b>Europe</b><br>Lee F.<br><b>APAC</b><br>Lee F.<br>Wen B.<br>Elydjah C.<br><b>USA</b><br>Lee F.<br><b>Omega</b><br>Synne A.<br>Freider Engstrøm F.<br>Martine Grøttum E.<br>Helene L.<br>Kjartan V.<br>'

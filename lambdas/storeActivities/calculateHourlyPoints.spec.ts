@@ -1,7 +1,7 @@
-import { calculateHourlyPoints } from './calculateHourlyPoints'
+import { calculateHourlyPoints } from './calculateHourlyPoints.js'
 
 describe('calculateHourlyPoints()', () => {
-	it('should calculate hourly points for the teams', async () => {
+	it('should calculate hourly points for the teams', () => {
 		const expectedMemberCount = {
 			'42': { hourlyPoints: 3 },
 			'43': { hourlyPoints: 2 },

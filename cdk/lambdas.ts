@@ -24,7 +24,7 @@ export const prepareStravaArchiveLambdas =
 		lambdas: {
 			storeActivities: await packLambdaFromPath(
 				'storeActivities',
-				'lambdas/storeActivities.ts',
+				'lambdas/storeActivities/storeActivities.ts',
 			),
 			summaryAPI: await packLambdaFromPath(
 				'summaryAPI',
@@ -32,11 +32,11 @@ export const prepareStravaArchiveLambdas =
 			),
 			sendEmailWithTopDistAndTime: await packLambdaFromPath(
 				'sendEmailWithTopDistAndTime',
-				'lambdas/sendEmailWithTopDistAndTime.ts',
+				'lambdas/sendEmail/sendEmailWithTopDistAndTime.ts',
 			),
 			sendEmailWithRandomWinners: await packLambdaFromPath(
 				'sendEmailWithRandomWinners',
-				'lambdas/sendEmailWithRandomWinners.ts',
+				'lambdas/sendEmail/sendEmailWithRandomWinners.ts',
 			),
 		},
 	})

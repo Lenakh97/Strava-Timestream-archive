@@ -1,11 +1,11 @@
 import { calculateHourlyPoints } from './calculateHourlyPoints.js'
 import { getDistanceForAllTeams } from './getDistanceForAllTeams.js'
-import type { TeamInfo } from './getMemberCount.js'
+import type { TeamInfo } from '../getMemberCount.js'
 import { getPointsForGraph } from './getPointsForGraph.js'
 import { getTotalDistance } from './getTotalDistance.js'
 import { getTotalHoursSpent } from './getTotalHoursSpent.js'
 import { getTotalTimePerClub } from './getTotalTimePerClub.js'
-import type { Team } from './lambdas/teamList.js'
+import type { Team } from '../teamList.js'
 
 export type WeeklySummary = {
 	weekNumber: number
@@ -56,28 +56,28 @@ export const getSummary = async ({
 	for (const week of StravaChallengeWeeks) {
 		const teamInfoArray = [] as TeamInformation
 		const timePerAthlete = await getTotalTimePerClub({
-			DatabaseName: DatabaseName,
-			TableName: TableName,
+			DatabaseName,
+			TableName,
 			teamInfo: memberCount,
 			weekNumber: week,
 		})
 		const hourlyPoints = calculateHourlyPoints(timePerAthlete)
 		const pointsForGraph = await getPointsForGraph({
-			DatabaseName: DatabaseName,
-			TableName: TableName,
+			DatabaseName,
+			TableName,
 			teamInfo: memberCount,
 			teamInfoTime: timePerAthlete,
 			teamInfoHourlyPoints: hourlyPoints,
 			weekNumber: week,
 		})
 		const distance = await getDistanceForAllTeams({
-			DatabaseName: DatabaseName,
-			TableName: TableName,
+			DatabaseName,
+			TableName,
 			weekNumber: week,
 		})
 		const weeklyDistance = await getTotalDistance({
-			DatabaseName: DatabaseName,
-			TableName: TableName,
+			DatabaseName,
+			TableName,
 			weekNumber: week,
 		})
 		for (const team of teamInfo) {
@@ -95,13 +95,13 @@ export const getSummary = async ({
 			teamInformation: teamInfoArray,
 		})
 		totDist += await getTotalDistance({
-			DatabaseName: DatabaseName,
-			TableName: TableName,
+			DatabaseName,
+			TableName,
 			weekNumber: week,
 		})
 		totHours += await getTotalHoursSpent({
-			DatabaseName: DatabaseName,
-			TableName: TableName,
+			DatabaseName,
+			TableName,
 			weekNumber: week,
 		})
 	}
