@@ -65,6 +65,6 @@
     "@bifravst/prettier-config": "^1.0.0",
     "@nordicsemiconductor/from-env": "3.0.0",
     "@nordicsemiconductor/timestream-helpers": "6.0.1",
-    "date-fns": "2.30.0"
+    "date-fns": "3.6.0"
   }
 }
