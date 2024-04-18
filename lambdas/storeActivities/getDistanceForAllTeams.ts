@@ -1,37 +1,40 @@
 import {
 	QueryCommand,
+	Row,
 	TimestreamQueryClient,
 } from '@aws-sdk/client-timestream-query'
-import type { TeamInfo } from 'getMemberCount'
-import type { TeamInfoTime } from 'getTotalTimePerClub'
 
-export type ClubPoints = Record<string, { points: number }>
-export type HourlyPoints = Record<string, { hourlyPoints: number }>
+export type DistanceInfo = Record<string, { distance: number }>
 
-export const getPointsForGraph = async ({
+export const getDistanceForAllTeams = async ({
 	DatabaseName,
 	TableName,
-	teamInfo,
-	teamInfoTime,
-	teamInfoHourlyPoints,
 	weekNumber,
 }: {
 	DatabaseName: string
 	TableName: string
-	teamInfo: TeamInfo
-	teamInfoTime: TeamInfoTime
-	teamInfoHourlyPoints: HourlyPoints
 	weekNumber: number
-}): Promise<ClubPoints> => {
-	const clubPoints = {} as ClubPoints
-	const teamArray = Object.keys(teamInfo)
+}): Promise<DistanceInfo> => {
 	const tsq = new TimestreamQueryClient({})
+	const teamInfo = {} as DistanceInfo
+	//use this method to be able to use unit test
+	/*const teams = await tsq.send(
+		selectTeamsQuery(DatabaseName, TableName)//  returns -> new QueryCommand({QueryString: `SELECT DISTINCT Team FROM "${DatabaseName}"."${TableName}"`,}),
+	)*/
+	const teams = await tsq.send(
+		new QueryCommand({
+			QueryString: `SELECT DISTINCT Team FROM "${DatabaseName}"."${TableName}"`,
+		}),
+	)
+	const teamArray = []
+	const rows = teams?.Rows as Row[]
+	for (const tsData of rows) {
+		teamArray.push(tsData?.Data?.[0]?.ScalarValue)
+	}
 	for (const TeamID of teamArray) {
-		const hPoints = teamInfoHourlyPoints[TeamID]?.hourlyPoints
 		const result = await tsq.send(
 			new QueryCommand({
-				QueryString: `
-                SELECT (SUM(
+				QueryString: `SELECT SUM(
                     CASE
                         WHEN activity_type = 'Ride' 
                             OR activity_type = 'VirtualRide' 
@@ -45,16 +48,16 @@ export const getPointsForGraph = async ({
                         WHEN activity_type = 'Snowboard' THEN measure_value::double * 0
                         WHEN activity_type = 'AlpineSki' THEN measure_value::double * 0
                         ELSE measure_value::double
-                    END)/ 1000 / ${teamInfo[TeamID]?.memberCount}) + ${hPoints}
-                FROM "${DatabaseName}"."${TableName}" 
-                WHERE (measure_name = 'distance')
-                AND Team='${TeamID}'
-                AND (SELECT week(time)=${weekNumber})`,
+                    END) / 1000 FROM "${DatabaseName}"."${TableName}" WHERE measure_name='distance' AND Team='${TeamID}' AND (SELECT week(time)=${weekNumber})`,
 			}),
 		)
-		clubPoints[TeamID] = {
-			points: parseFloat(result?.Rows?.[0]?.Data?.[0]?.ScalarValue ?? '0'),
+		if (TeamID === undefined) {
+			continue
+		}
+		teamInfo[TeamID] = {
+			distance: parseFloat(result?.Rows?.[0]?.Data?.[0]?.ScalarValue ?? '0'),
 		}
 	}
-	return clubPoints
+
+	return teamInfo
 }

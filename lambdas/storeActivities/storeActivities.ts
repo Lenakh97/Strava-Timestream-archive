@@ -12,11 +12,12 @@ import {
 import { marshall } from '@aws-sdk/util-dynamodb'
 import { fromEnv } from '@nordicsemiconductor/from-env'
 import { getMemberCount } from '../getMemberCount.js'
-import { getSummary } from '../getSummary.js'
-import { getAccessToken } from '../stravaAPI/getAccessToken.js'
-import { getActivities } from '../stravaAPI/getActivities.js'
-import { stravaToTimestream } from '../stravaToTimestream.js'
-import { teamList } from './teamList.js'
+import { getSummary } from './getSummary.js'
+import { getAccessToken } from '../../stravaAPI/getAccessToken.js'
+import { getActivities } from '../../stravaAPI/getActivities.js'
+import { stravaToTimestream } from './stravaToTimestream.js'
+import { teamList } from '../teamList.js'
+import { StravaChallengeWeeks, fallBackStartTimestamp } from '../../config.js'
 
 const { tableInfo, clientID, clientSecret, refreshToken, cacheTableName } =
 	fromEnv({
@@ -33,8 +34,6 @@ const ssm = new SSMClient({})
 const tsw = new TimestreamWriteClient({})
 const db = new DynamoDBClient({})
 
-const StravaChallengeWeeks = [16, 17, 18, 19]
-
 export const handler = async (): Promise<void> => {
 	const accessToken = await getAccessToken({
 		CLIENT_ID: clientID,
@@ -42,7 +41,6 @@ export const handler = async (): Promise<void> => {
 		REFRESH_TOKEN: refreshToken,
 	})
 
-	const fallBackStartTimestamp = new Date('2023-03-27T00:00:00').toISOString()
 	let startTimestamp: string | undefined
 	try {
 		startTimestamp = (
@@ -114,7 +112,7 @@ export const handler = async (): Promise<void> => {
 		DatabaseName: dbName,
 		TableName: tableName,
 		teamInfo: teamList,
-		StravaChallengeWeeks: StravaChallengeWeeks,
+		StravaChallengeWeeks,
 		memberCount,
 	})
 	await db.send(

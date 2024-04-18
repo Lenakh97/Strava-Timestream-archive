@@ -8,8 +8,8 @@ import { jest } from '@jest/globals'
 import { randomUUID } from 'crypto'
 import { getSummary, Summary } from './getSummary.js'
 import { stravaToTimestream } from './stravaToTimestream.js'
-import testData from './test-data/activities.json'
-import { weekNumber } from './weekNumber.js'
+import testData from '../../test-data/activities.json'
+import { weekNumber } from '../weekNumber.js'
 
 jest.setTimeout(30 * 1000)
 

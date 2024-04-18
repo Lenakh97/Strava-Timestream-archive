@@ -1,4 +1,4 @@
-import { stravaToTimestream } from './stravaToTimestream'
+import { stravaToTimestream } from './stravaToTimestream.js'
 
 describe('stravaToTimestream', () => {
 	it('should convert Strava activity data to Timestream records', () => {

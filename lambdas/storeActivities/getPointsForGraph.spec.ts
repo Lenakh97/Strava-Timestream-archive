@@ -5,11 +5,10 @@ import {
 	WriteRecordsCommand,
 } from '@aws-sdk/client-timestream-write'
 import { randomUUID } from 'crypto'
-import { getDistanceForAllTeams } from './getDistanceForAllTeams.js'
-import { stravaToTimestream } from './stravaToTimestream'
-import testData from './test-data/activities.json'
-import { weekNumber } from './weekNumber'
-
+import { getPointsForGraph } from './getPointsForGraph.js'
+import { stravaToTimestream } from 'lambdas/storeActivities/stravaToTimestream.js'
+import testData from '../../test-data/activities.json'
+import { weekNumber } from 'lambdas/weekNumber.js'
 const tsw = new TimestreamWriteClient({})
 const testDatabaseName = process.env.TEST_DB_NAME as string
 const testTableName = randomUUID()
@@ -33,8 +32,8 @@ afterAll(async () => {
 	)
 })
 
-describe('getDistanceForAllTeams()', () => {
-	it('should return the total distance', async () => {
+describe('getPointsForGraph()', () => {
+	it('should return points for each team to use in Graph', async () => {
 		// Fill Timestream table with test data
 		await tsw.send(
 			new WriteRecordsCommand({
@@ -50,21 +49,30 @@ describe('getDistanceForAllTeams()', () => {
 				Records: stravaToTimestream(43, currentTime, testData),
 			}),
 		)
-
-		const expectedDistance = {
-			'42': {
-				distance: 38.411199999999994,
-			},
-			'43': {
-				distance: 38.411199999999994,
-			},
+		//points = total distance (which is divided by a number based on activity) divided by active atlethes in the club
+		const expectedGraphPoints = {
+			'42': { points: 16.803733333333334 },
+			'43': { points: 14.803733333333332 },
 		}
+
 		expect(
-			await getDistanceForAllTeams({
+			await getPointsForGraph({
 				DatabaseName: testDatabaseName,
 				TableName: testTableName,
+				teamInfo: {
+					'42': { memberCount: 3 },
+					'43': { memberCount: 3 },
+				},
+				teamInfoTime: {
+					'42': { minutesPerAthlete: 143.06666666666666 },
+					'43': { minutesPerAthlete: 143.06666666666666 },
+				},
+				teamInfoHourlyPoints: {
+					'42': { hourlyPoints: 4 },
+					'43': { hourlyPoints: 2 },
+				},
 				weekNumber: weekNumber(currentTime),
 			}),
-		).toEqual(expectedDistance)
+		).toEqual(expectedGraphPoints)
 	})
 })

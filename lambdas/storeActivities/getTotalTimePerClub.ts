@@ -2,7 +2,7 @@ import {
 	QueryCommand,
 	TimestreamQueryClient,
 } from '@aws-sdk/client-timestream-query'
-import type { TeamInfo } from 'getMemberCount'
+import type { TeamInfo } from '../getMemberCount.js'
 
 export type TeamInfoTime = Record<string, { minutesPerAthlete: number }>
 

@@ -1,4 +1,4 @@
-import { weekNumber } from './weekNumber'
+import { weekNumber } from './weekNumber.js'
 
 describe('weekNumber()', () => {
 	it('should return a week for a date', () => {

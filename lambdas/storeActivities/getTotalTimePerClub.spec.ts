@@ -5,9 +5,10 @@ import {
 	WriteRecordsCommand,
 } from '@aws-sdk/client-timestream-write'
 import { randomUUID } from 'crypto'
-import { getMemberCount } from './getMemberCount.js'
+import { getTotalTimePerClub } from './getTotalTimePerClub.js'
 import { stravaToTimestream } from './stravaToTimestream.js'
-import testData from './test-data/activities.json'
+import testData from '../../test-data/activities.json'
+import { weekNumber } from '../weekNumber.js'
 
 const tsw = new TimestreamWriteClient({})
 const testDatabaseName = process.env.TEST_DB_NAME as string
@@ -32,8 +33,8 @@ afterAll(async () => {
 	)
 })
 
-describe('getMemberCount()', () => {
-	it('should return the member count for the given club', async () => {
+describe('getTotalTimePerClub()', () => {
+	it('should return the amount of active minutes per athlete in each club', async () => {
 		// Fill Timestream table with test data
 		await tsw.send(
 			new WriteRecordsCommand({
@@ -49,17 +50,21 @@ describe('getMemberCount()', () => {
 				Records: stravaToTimestream(43, currentTime, testData),
 			}),
 		)
-
-		const expectedMemberCount = {
-			'42': { memberCount: 3 },
-			'43': { memberCount: 3 },
+		const expectedMinutesPerAthlete = {
+			'42': { minutesPerAthlete: 143.06666666666666 },
+			'43': { minutesPerAthlete: 143.06666666666666 },
 		}
 
 		expect(
-			await getMemberCount({
+			await getTotalTimePerClub({
 				DatabaseName: testDatabaseName,
 				TableName: testTableName,
+				teamInfo: {
+					'42': { memberCount: 3 },
+					'43': { memberCount: 3 },
+				},
+				weekNumber: weekNumber(currentTime),
 			}),
-		).toEqual(expectedMemberCount)
+		).toEqual(expectedMinutesPerAthlete)
 	})
 })

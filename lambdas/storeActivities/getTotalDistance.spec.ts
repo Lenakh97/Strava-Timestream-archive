@@ -5,10 +5,10 @@ import {
 	WriteRecordsCommand,
 } from '@aws-sdk/client-timestream-write'
 import { randomUUID } from 'crypto'
-import { getTotalTimePerClub } from './getTotalTimePerClub.js'
+import { getTotalDistance } from './getTotalDistance.js'
 import { stravaToTimestream } from './stravaToTimestream.js'
-import testData from './test-data/activities.json'
-import { weekNumber } from './weekNumber.js'
+import testData from '../../test-data/activities.json'
+import { weekNumber } from '../weekNumber.js'
 
 const tsw = new TimestreamWriteClient({})
 const testDatabaseName = process.env.TEST_DB_NAME as string
@@ -33,8 +33,8 @@ afterAll(async () => {
 	)
 })
 
-describe('getTotalTimePerClub()', () => {
-	it('should return the amount of active minutes per athlete in each club', async () => {
+describe('getTotalDistance()', () => {
+	it('should return the total distance', async () => {
 		// Fill Timestream table with test data
 		await tsw.send(
 			new WriteRecordsCommand({
@@ -43,28 +43,15 @@ describe('getTotalTimePerClub()', () => {
 				Records: stravaToTimestream(42, currentTime, testData),
 			}),
 		)
-		await tsw.send(
-			new WriteRecordsCommand({
-				DatabaseName: testDatabaseName,
-				TableName: testTableName,
-				Records: stravaToTimestream(43, currentTime, testData),
-			}),
-		)
-		const expectedMinutesPerAthlete = {
-			'42': { minutesPerAthlete: 143.06666666666666 },
-			'43': { minutesPerAthlete: 143.06666666666666 },
-		}
 
+		const expectedDistance = 38.411199999999994
+		expect(expectedDistance).toBeGreaterThan(0)
 		expect(
-			await getTotalTimePerClub({
+			await getTotalDistance({
 				DatabaseName: testDatabaseName,
 				TableName: testTableName,
-				teamInfo: {
-					'42': { memberCount: 3 },
-					'43': { memberCount: 3 },
-				},
 				weekNumber: weekNumber(currentTime),
 			}),
-		).toEqual(expectedMinutesPerAthlete)
+		).toEqual(expectedDistance)
 	})
 })

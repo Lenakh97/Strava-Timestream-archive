@@ -1,5 +1,5 @@
-import type { HourlyPoints } from 'getPointsForGraph'
-import type { TeamInfoTime } from 'getTotalTimePerClub'
+import type { HourlyPoints } from './getPointsForGraph.js'
+import type { TeamInfoTime } from './getTotalTimePerClub.js'
 
 export const calculateHourlyPoints = (
 	teamInfoTime: TeamInfoTime,
@@ -8,8 +8,8 @@ export const calculateHourlyPoints = (
 	const newArr = Object.entries(teamInfoTime)
 	newArr.sort(
 		(
-			[team1, { minutesPerAthlete: minutes1 }],
-			[team2, { minutesPerAthlete: minutes2 }],
+			[, { minutesPerAthlete: minutes1 }],
+			[, { minutesPerAthlete: minutes2 }],
 		) => minutes2 - minutes1,
 	)
 	let points = 4
