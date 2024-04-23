@@ -6,9 +6,14 @@
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "prepare": "husky"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lenakh97/Strava-Timestream-archive.git"
+  },
   "author": "Nordic Semiconductor ASA | nordicsemi.no",
   "license": "BSD-3-Clause",
   "devDependencies": {
+    "@aws-sdk/client-iam": "3.556.0",
     "@aws-sdk/client-ses": "3.554.0",
     "@aws-sdk/client-ssm": "3.474.0",
     "@aws-sdk/client-timestream-query": "3.474.0",
