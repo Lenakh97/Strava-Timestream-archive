@@ -10,7 +10,7 @@ import Lambda from 'aws-cdk-lib/aws-lambda'
 import { RetentionDays } from 'aws-cdk-lib/aws-logs'
 import Timestream from 'aws-cdk-lib/aws-timestream'
 import type { StravaArchiveLambdas } from './lambdas'
-import { TeamCountScheduledQuery } from './TeamCountScheduledQuery.js'
+//import { TeamCountScheduledQuery } from './TeamCountScheduledQuery.js'
 import { CD } from './CD.js'
 
 export class StravaArchiveStack extends CloudFormation.Stack {
@@ -55,7 +55,7 @@ export class StravaArchiveStack extends CloudFormation.Stack {
 			},
 		})
 
-		const teamCount = new TeamCountScheduledQuery(this, db, table)
+		//const teamCount = new TeamCountScheduledQuery(this, db, table)
 
 		new CloudFormation.CfnOutput(this, 'tableInfo', {
 			value: table.ref,
