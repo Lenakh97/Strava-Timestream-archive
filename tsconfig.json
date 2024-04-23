@@ -15,7 +15,6 @@
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
     "noEmit": true,
-    "importsNotUsedAsValues": "error",
     "baseUrl": ".",
     "paths": {
       "@nordicsemiconductor/coiote-aws-converter-js": ["index.d.ts"]
