@@ -10,18 +10,40 @@ import Lambda from 'aws-cdk-lib/aws-lambda'
 import { RetentionDays } from 'aws-cdk-lib/aws-logs'
 import Timestream from 'aws-cdk-lib/aws-timestream'
 import type { StravaArchiveLambdas } from './lambdas'
-import { TeamCountScheduledQuery } from './TeamCountScheduledQuery'
+import { TeamCountScheduledQuery } from './TeamCountScheduledQuery.js'
+import { CD } from './CD.js'
 
 export class StravaArchiveStack extends CloudFormation.Stack {
 	public constructor(
 		parent: CloudFormation.App,
 		{
 			lambdas,
+			repository,
+			gitHubOIDCProviderArn,
 		}: {
 			lambdas: StravaArchiveLambdas
+			repository: {
+				owner: string
+				repo: string
+			}
+			gitHubOIDCProviderArn: string
 		},
 	) {
 		super(parent, 'strava-archive')
+
+		// Set up role for CD
+		const gitHubOIDC = IAM.OpenIdConnectProvider.fromOpenIdConnectProviderArn(
+			this,
+			'gitHubOICDProvider',
+			gitHubOIDCProviderArn,
+		)
+		const cd = new CD(this, { repository, gitHubOIDC })
+
+		new CloudFormation.CfnOutput(this, 'cdRoleArn', {
+			exportName: `${this.stackName}:cdRoleArn`,
+			description: 'Role to use in GitHub Actions',
+			value: cd.role.roleArn,
+		})
 
 		// Timestream database
 		const db = new Timestream.CfnDatabase(this, 'db')
@@ -249,4 +271,7 @@ export class StravaArchiveStack extends CloudFormation.Stack {
 			exportName: 'summaryAPIURL',
 		})
 	}
+}
+export type StackOutputs = {
+	cdRoleArn: string
 }
