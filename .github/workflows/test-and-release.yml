@@ -64,7 +64,6 @@ jobs:
       - name: Clean up End-to-End test resources
         if: always()
         run: |
-          ./cli.sh purge-bucket-objects
           npx cdk destroy -f ${{ env.STACK_NAME }}
 
   release:
