@@ -55,4 +55,4 @@ new StravaArchiveApp({
 		iam,
 	}),
 	version: process.env.VERSION ?? '0.0.0-development',
-})
+}).synth()
