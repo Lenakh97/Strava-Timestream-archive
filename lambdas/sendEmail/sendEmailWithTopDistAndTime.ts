@@ -4,6 +4,7 @@ import { createSendEmailCommand } from './createSendEmailCommand.js'
 import { getTopDistanceAndTimeAthlete } from './getTopDistanceAndTimeAthlete.js'
 import { JsonToEmailFormat } from './JsonToEmailFormat.js'
 import { teamList } from '../teamList.js'
+import { sendEmail } from '../../config.js'
 
 const ses = new SESClient({})
 const { tableInfo } = fromEnv({
@@ -21,9 +22,8 @@ export const handler = async (): Promise<any> => {
 	const parsed = JSON.parse(winners)
 	const content = JsonToEmailFormat(parsed, teamList)
 	const sendEmailCommand = createSendEmailCommand(
-		'lena.haraldseid@nordicsemi.no',
-		'lenaharaldseid@gmail.com',
-
+		sendEmail.toAddress,
+		sendEmail.fromAddress,
 		content,
 		`Time and Distance Statistics`,
 	)

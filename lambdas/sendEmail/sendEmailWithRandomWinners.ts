@@ -5,6 +5,7 @@ import { getRandomWeeklyWinners } from './getRandomWeeklyWinners.js'
 import { JsonToEmailFormat, WinnersObject } from './JsonToEmailFormat.js'
 import { weekNumber } from '../weekNumber.js'
 import { teamList } from '../teamList.js'
+import { sendEmail } from '../../config.js'
 
 const ses = new SESClient({})
 const { tableInfo } = fromEnv({
@@ -24,9 +25,8 @@ export const handler = async (): Promise<any> => {
 	const parsed = JSON.parse(winners) as WinnersObject
 	const content = JsonToEmailFormat(parsed, teamList)
 	const sendEmailCommand = createSendEmailCommand(
-		'lena.haraldseid@nordicsemi.no',
-		'lenaharaldseid@gmail.com',
-
+		sendEmail.toAddress,
+		sendEmail.fromAddress,
 		content,
 		`Random winners week ${weekNumber(currentTime)}`,
 	)
