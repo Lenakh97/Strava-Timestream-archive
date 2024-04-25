@@ -36,6 +36,21 @@ describe('stravaToTimestream', () => {
 				sport_type: 'Ride',
 				workout_type: null,
 			},
+			{
+				resource_state: 2,
+				athlete: {
+					resource_state: 2,
+					firstname: 'Lena Kråkevik',
+					lastname: 'H.',
+				},
+				name: 'Morning Weight Training',
+				distance: 0.0,
+				moving_time: 2833,
+				elapsed_time: 2833,
+				total_elevation_gain: 0,
+				type: 'WeightTraining',
+				sport_type: 'WeightTraining',
+			},
 		])
 		expect(result).toContainEqual({
 			Dimensions: [
@@ -82,6 +97,30 @@ describe('stravaToTimestream', () => {
 			],
 			MeasureName: 'distance',
 			MeasureValue: '47883.4',
+			MeasureValueType: 'DOUBLE',
+			Time: currentTime.getTime().toString(),
+		})
+		expect(result).toContainEqual({
+			Dimensions: [
+				{ Name: 'Team', Value: '42', dimensionValueType: 'INT' },
+				{
+					Name: 'activity_id',
+					Value: '08f83f6cbd48b966f8211745e9e46b20fd9f9060',
+					dimensionValueType: 'VARCHAR',
+				},
+				{
+					Name: 'athlete',
+					Value: 'Lena Kråkevik H.',
+					dimensionValueType: 'VARCHAR',
+				},
+				{
+					Name: 'activity_type',
+					Value: 'WeightTraining',
+					dimensionValueType: 'VARCHAR',
+				},
+			],
+			MeasureName: 'distance',
+			MeasureValue: '3934.722222222222',
 			MeasureValueType: 'DOUBLE',
 			Time: currentTime.getTime().toString(),
 		})
