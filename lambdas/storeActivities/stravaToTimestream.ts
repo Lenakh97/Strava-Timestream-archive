@@ -21,7 +21,7 @@ export type StravaActivity = {
 	total_elevation_gain: number // 781
 	type: string // 'Ride'
 	sport_type: string // 'Ride'
-	workout_type: number | null // 10
+	workout_type?: number | null // 10
 }
 
 export const stravaToTimestream = (
@@ -49,6 +49,23 @@ export const stravaToTimestream = (
 				dimensionValueType: 'VARCHAR',
 			},
 		]
+		//if distance = 0 the activity is without distance and the athlete should get 5 'km points' per hour of activity.
+		let noDistancePoints = 0
+		if (
+			activity.distance === 0.0 ||
+			activity.type === 'Snowboard' ||
+			activity.type === 'AlpineSki'
+		) {
+			const hours = activity.elapsed_time / 3600
+			noDistancePoints = 5 * hours * 1000
+		}
+		records.push({
+			Time: currentTime.getTime().toString(),
+			Dimensions: dimension,
+			MeasureName: 'nodistance_points',
+			MeasureValue: String(noDistancePoints),
+			MeasureValueType: 'DOUBLE',
+		})
 		records.push({
 			Time: currentTime.getTime().toString(),
 			Dimensions: dimension,

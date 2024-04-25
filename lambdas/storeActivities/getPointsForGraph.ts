@@ -28,7 +28,7 @@ export const getPointsForGraph = async ({
 	const tsq = new TimestreamQueryClient({})
 	for (const TeamID of teamArray) {
 		const hPoints = teamInfoHourlyPoints[TeamID]?.hourlyPoints
-		const result = await tsq.send(
+		const distancePoints = await tsq.send(
 			new QueryCommand({
 				QueryString: `
                 SELECT (SUM(
@@ -45,15 +45,30 @@ export const getPointsForGraph = async ({
                         WHEN activity_type = 'Snowboard' THEN measure_value::double * 0
                         WHEN activity_type = 'AlpineSki' THEN measure_value::double * 0
                         ELSE measure_value::double
-                    END)/ 1000 / ${teamInfo[TeamID]?.memberCount}) + ${hPoints}
+                    END)/ 1000 / ${teamInfo[TeamID]?.memberCount})
                 FROM "${DatabaseName}"."${TableName}" 
                 WHERE (measure_name = 'distance')
                 AND Team='${TeamID}'
                 AND (SELECT week(time)=${weekNumber})`,
 			}),
 		)
+		const noDistancePoints = await tsq.send(
+			new QueryCommand({
+				QueryString: `
+                SELECT (SUM(
+                    measure_value::double
+                    )/ 1000 / ${teamInfo[TeamID]?.memberCount}) 
+                FROM "${DatabaseName}"."${TableName}" 
+                WHERE (measure_name = 'nodistance_points')
+                AND Team='${TeamID}'
+                AND (SELECT week(time)=${weekNumber})`,
+			}),
+		)
+		const totalPoints =
+			parseFloat(distancePoints?.Rows?.[0]?.Data?.[0]?.ScalarValue ?? '0') +
+			parseFloat(noDistancePoints?.Rows?.[0]?.Data?.[0]?.ScalarValue ?? '0')
 		clubPoints[TeamID] = {
-			points: parseFloat(result?.Rows?.[0]?.Data?.[0]?.ScalarValue ?? '0'),
+			points: totalPoints,
 		}
 	}
 	return clubPoints
