@@ -6,7 +6,7 @@ import { getTotalDistance } from './getTotalDistance.js'
 import { getTotalHoursSpent } from './getTotalHoursSpent.js'
 import { getTotalTimePerClub } from './getTotalTimePerClub.js'
 import type { Team } from '../teamList.js'
-
+import { distanceGoal } from '../../config.js'
 export type WeeklySummary = {
 	weekNumber: number
 	distance: number
@@ -107,7 +107,7 @@ export const getSummary = async ({
 	}
 	return {
 		overall: {
-			distanceGoal: 15726.7,
+			distanceGoal,
 			currentDistance: totDist,
 			totalHours: totHours,
 			teamInfo: teamInfoMembers,
