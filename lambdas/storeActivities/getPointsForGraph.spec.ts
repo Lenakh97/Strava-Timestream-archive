@@ -6,9 +6,9 @@ import {
 } from '@aws-sdk/client-timestream-write'
 import { randomUUID } from 'crypto'
 import { getPointsForGraph } from './getPointsForGraph.js'
-import { stravaToTimestream } from 'lambdas/storeActivities/stravaToTimestream.js'
+import { stravaToTimestream } from './stravaToTimestream.js'
 import testData from '../../test-data/activities.json'
-import { weekNumber } from 'lambdas/weekNumber.js'
+import { weekNumber } from '../weekNumber.js'
 const tsw = new TimestreamWriteClient({})
 const testDatabaseName = process.env.TEST_DB_NAME as string
 const testTableName = randomUUID()
