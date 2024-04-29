@@ -4,6 +4,7 @@ import {
 	TimestreamWriteClient,
 	WriteRecordsCommand,
 } from '@aws-sdk/client-timestream-write'
+import { jest } from '@jest/globals'
 import { randomUUID } from 'crypto'
 import { getTotalTimePerClub } from './getTotalTimePerClub.js'
 import { stravaToTimestream } from './stravaToTimestream.js'
@@ -14,6 +15,7 @@ const tsw = new TimestreamWriteClient({})
 const testDatabaseName = process.env.TEST_DB_NAME as string
 const testTableName = randomUUID()
 const currentTime = new Date()
+jest.setTimeout(30 * 1000)
 
 beforeAll(async () => {
 	await tsw.send(
