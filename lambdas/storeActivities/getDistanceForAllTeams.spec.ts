@@ -4,11 +4,13 @@ import {
 	TimestreamWriteClient,
 	WriteRecordsCommand,
 } from '@aws-sdk/client-timestream-write'
+import { jest } from '@jest/globals'
 import { randomUUID } from 'crypto'
 import { getDistanceForAllTeams } from './getDistanceForAllTeams.js'
 import { stravaToTimestream } from './stravaToTimestream.js'
 import testData from '../../test-data/activities.json'
 import { weekNumber } from '../weekNumber.js'
+jest.setTimeout(30 * 1000)
 
 const tsw = new TimestreamWriteClient({})
 const testDatabaseName = process.env.TEST_DB_NAME as string
