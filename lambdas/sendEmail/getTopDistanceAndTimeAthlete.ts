@@ -4,6 +4,7 @@ import {
 	TimestreamQueryClient,
 } from '@aws-sdk/client-timestream-query'
 import type { AthleteDistanceInfo } from './getTopDistanceAndTimeAthlete.spec'
+import { startDateString } from '../../config.js'
 
 export const getTopDistanceAndTimeAthlete = async ({
 	DatabaseName,
@@ -12,9 +13,7 @@ export const getTopDistanceAndTimeAthlete = async ({
 	DatabaseName: string
 	TableName: string
 }): Promise<Record<string, AthleteDistanceInfo>> => {
-	const startDate = '2023-04-17 00:00:00'
 	const tsq = new TimestreamQueryClient({})
-
 	const teams = await tsq.send(
 		new QueryCommand({
 			QueryString: `SELECT DISTINCT Team FROM "${DatabaseName}"."${TableName}"`,
@@ -29,7 +28,7 @@ export const getTopDistanceAndTimeAthlete = async ({
 	for (const TeamID of teamArray) {
 		const memberCount = await tsq.send(
 			new QueryCommand({
-				QueryString: `SELECT COUNT (DISTINCT athlete) FROM "${DatabaseName}"."${TableName}" WHERE Team='${TeamID}' AND time > '${startDate}'`,
+				QueryString: `SELECT COUNT (DISTINCT athlete) FROM "${DatabaseName}"."${TableName}" WHERE Team='${TeamID}' AND time > '${startDateString}'`,
 			}),
 		)
 		const numberOfAthletes = parseInt(
@@ -37,7 +36,7 @@ export const getTopDistanceAndTimeAthlete = async ({
 		)
 		const athletes = await tsq.send(
 			new QueryCommand({
-				QueryString: `SELECT DISTINCT athlete FROM "${DatabaseName}"."${TableName}" WHERE Team='${TeamID}' AND time > '${startDate}'`,
+				QueryString: `SELECT DISTINCT athlete FROM "${DatabaseName}"."${TableName}" WHERE Team='${TeamID}' AND time > '${startDateString}'`,
 			}),
 		)
 		const athleteDistances = {} as AthleteDistanceInfo
@@ -59,12 +58,12 @@ export const getTopDistanceAndTimeAthlete = async ({
                         WHEN activity_type = 'Snowboard' THEN measure_value::double * 0
                         WHEN activity_type = 'AlpineSki' THEN measure_value::double * 0
                         ELSE measure_value::double
-                    END) / 1000 FROM "${DatabaseName}"."${TableName}" WHERE measure_name='distance' AND athlete='${athleteName}' AND Team='${TeamID}' AND time > '${startDate}' `,
+                    END) / 1000 FROM "${DatabaseName}"."${TableName}" WHERE measure_name='distance' AND athlete='${athleteName}' AND Team='${TeamID}' AND time > '${startDateString}' `,
 				}),
 			)
 			const totalTime = await tsq.send(
 				new QueryCommand({
-					QueryString: `SELECT SUM(measure_value::double) / 60 / 60 FROM "${DatabaseName}"."${TableName}" WHERE measure_name='elapsed_time' AND Team='${TeamID}' AND athlete='${athleteName}' AND time > '${startDate}'  `,
+					QueryString: `SELECT SUM(measure_value::double) / 60 / 60 FROM "${DatabaseName}"."${TableName}" WHERE measure_name='elapsed_time' AND Team='${TeamID}' AND athlete='${athleteName}' AND time > '${startDateString}'  `,
 				}),
 			)
 			athleteDistances[athleteName] = {
