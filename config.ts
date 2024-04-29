@@ -24,3 +24,6 @@ export const sendEmail = {
 	toAddress: 'lena.haraldseid@nordicsemi.no',
 	fromAddress: 'lenaharaldseid@gmail.com',
 }
+
+export const TEST_DB_NAME = 'TestStravaDatabase'
+export const TEST_TABLE_NAME = 'TestStravaTable'

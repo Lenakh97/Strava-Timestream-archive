@@ -10,9 +10,9 @@ import { getTopDistanceAndTimeAthlete } from './getTopDistanceAndTimeAthlete.js'
 import { stravaToTimestream } from '../storeActivities/stravaToTimestream.js'
 import testData from '../../test-data/activities2.json'
 import testData2 from '../../test-data/activities3.json'
+import { TEST_DB_NAME as testDatabaseName } from '../../config.js'
 
 const tsw = new TimestreamWriteClient({})
-const testDatabaseName = process.env.TEST_DB_NAME as string
 const testTableName = randomUUID()
 const currentTime = new Date()
 jest.setTimeout(30 * 1000)
