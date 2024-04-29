@@ -38,12 +38,14 @@ export const getSummary = async ({
 	teamInfo,
 	memberCount,
 	StravaChallengeWeeks,
+	officeHeadcount,
 }: {
 	DatabaseName: string
 	TableName: string
 	teamInfo: Team[]
 	memberCount: TeamInfo
 	StravaChallengeWeeks: number[]
+	officeHeadcount: TeamInfo
 }): Promise<Summary> => {
 	let totDist = 0
 	let totHours = 0
@@ -58,14 +60,14 @@ export const getSummary = async ({
 		const timePerAthlete = await getTotalTimePerClub({
 			DatabaseName,
 			TableName,
-			teamInfo: memberCount,
+			teamInfo: officeHeadcount,
 			weekNumber: week,
 		})
 		const hourlyPoints = calculateHourlyPoints(timePerAthlete)
 		const pointsForGraph = await getPointsForGraph({
 			DatabaseName,
 			TableName,
-			teamInfo: memberCount,
+			teamInfo: officeHeadcount,
 			teamInfoTime: timePerAthlete,
 			teamInfoHourlyPoints: hourlyPoints,
 			weekNumber: week,

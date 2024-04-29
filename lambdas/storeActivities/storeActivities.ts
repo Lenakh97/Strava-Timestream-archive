@@ -17,7 +17,11 @@ import { getAccessToken } from '../../stravaAPI/getAccessToken.js'
 import { getActivities } from '../../stravaAPI/getActivities.js'
 import { stravaToTimestream } from './stravaToTimestream.js'
 import { teamList } from '../teamList.js'
-import { StravaChallengeWeeks, fallBackStartTimestamp } from '../../config.js'
+import {
+	StravaChallengeWeeks,
+	fallBackStartTimestamp,
+	officeHeadcount,
+} from '../../config.js'
 
 const { tableInfo, clientID, clientSecret, refreshToken, cacheTableName } =
 	fromEnv({
@@ -114,6 +118,7 @@ export const handler = async (): Promise<void> => {
 		teamInfo: teamList,
 		StravaChallengeWeeks,
 		memberCount,
+		officeHeadcount,
 	})
 	await db.send(
 		new PutItemCommand({

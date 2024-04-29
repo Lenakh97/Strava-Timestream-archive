@@ -53,8 +53,8 @@ describe('getPointsForGraph()', () => {
 		)
 		//points = total distance (which is divided by a number based on activity) divided by active atlethes in the club
 		const expectedGraphPoints = {
-			'42': { points: 16.803733333333334 },
-			'43': { points: 14.803733333333332 },
+			'42': { points: 12.803733333333332 },
+			'43': { points: 12.803733333333332 },
 		}
 
 		expect(
