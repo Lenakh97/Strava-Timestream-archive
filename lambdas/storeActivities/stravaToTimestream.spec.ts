@@ -119,8 +119,32 @@ describe('stravaToTimestream', () => {
 					dimensionValueType: 'VARCHAR',
 				},
 			],
-			MeasureName: 'distance',
+			MeasureName: 'nodistance_points',
 			MeasureValue: '3934.722222222222',
+			MeasureValueType: 'DOUBLE',
+			Time: currentTime.getTime().toString(),
+		})
+		expect(result).toContainEqual({
+			Dimensions: [
+				{ Name: 'Team', Value: '42', dimensionValueType: 'INT' },
+				{
+					Name: 'activity_id',
+					Value: '08f83f6cbd48b966f8211745e9e46b20fd9f9060',
+					dimensionValueType: 'VARCHAR',
+				},
+				{
+					Name: 'athlete',
+					Value: 'Lena Kråkevik H.',
+					dimensionValueType: 'VARCHAR',
+				},
+				{
+					Name: 'activity_type',
+					Value: 'WeightTraining',
+					dimensionValueType: 'VARCHAR',
+				},
+			],
+			MeasureName: 'distance',
+			MeasureValue: '0',
 			MeasureValueType: 'DOUBLE',
 			Time: currentTime.getTime().toString(),
 		})
