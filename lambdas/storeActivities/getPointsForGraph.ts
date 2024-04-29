@@ -27,7 +27,7 @@ export const getPointsForGraph = async ({
 	const teamArray = Object.keys(teamInfo)
 	const tsq = new TimestreamQueryClient({})
 	for (const TeamID of teamArray) {
-		const hPoints = teamInfoHourlyPoints[TeamID]?.hourlyPoints
+		//const hPoints = teamInfoHourlyPoints[TeamID]?.hourlyPoints
 		const distancePoints = await tsq.send(
 			new QueryCommand({
 				QueryString: `

@@ -79,15 +79,15 @@ describe('getSummary()', () => {
 						{
 							teamId: 42,
 							teamName: 'Team A',
-							points: 16.803733333333334,
-							minutesPerAthlete: 143.06666666666666,
+							points: 3.841119999999999,
+							minutesPerAthlete: 42.92,
 							distance: 38.411199999999994,
 						},
 						{
 							teamId: 43,
 							teamName: 'Team B',
-							points: 15.803733333333332,
-							minutesPerAthlete: 143.06666666666666,
+							points: 3.841119999999999,
+							minutesPerAthlete: 42.92,
 							distance: 38.411199999999994,
 						},
 					],
@@ -104,6 +104,10 @@ describe('getSummary()', () => {
 					{ id: 43, name: 'Team B' },
 				],
 				StravaChallengeWeeks: [weekNumber(currentTime)],
+				officeHeadcount: {
+					42: { memberCount: 10 },
+					43: { memberCount: 10 },
+				},
 				memberCount: {
 					42: { memberCount: 3 },
 					43: { memberCount: 3 },
