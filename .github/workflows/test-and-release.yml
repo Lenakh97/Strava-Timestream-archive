@@ -52,11 +52,6 @@ jobs:
           RANDOM_STRING=`node -e "const crypto = require('crypto'); process.stdout.write(crypto.randomBytes(Math.ceil(8 * 0.5)).toString('hex').slice(0, 8));"`
           echo "STACK_NAME=ppr-${RANDOM_STRING}" >> $GITHUB_ENV
 
-      - name: Create database and table for integration test
-        run: |
-          aws timestream-write create-database --database-name TestStravaDatabase
-          aws timestream-write create-table --database-name TestStravaDatabase --table-name TestStravaTable
-
       - name: Run Unit Tests
         run: npm test
 
