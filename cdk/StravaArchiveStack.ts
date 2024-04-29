@@ -195,9 +195,19 @@ export class StravaArchiveStack extends CloudFormation.Stack {
 			schedule: Events.Schedule.expression('rate(1 hour)'),
 			description: `Invoke the lambda that fetches activities from Strava`,
 			enabled: true,
+			targets: [new EventsTargets.LambdaFunction(storeMessagesInTimestream)],
+		})
+		const weeklyRule = new Events.Rule(this, 'SendEmailRule', {
+			schedule: Events.Schedule.cron({
+				minute: '0',
+				hour: '23',
+				weekDay: 'SUN',
+			}),
+			description: `Invoke the lambda that sends email with winners`,
+			enabled: true,
 			targets: [
-				new EventsTargets.LambdaFunction(storeMessagesInTimestream),
 				new EventsTargets.LambdaFunction(sendEmailWithTopDistAndTime),
+				new EventsTargets.LambdaFunction(sendEmailWithRandomWinners),
 			],
 		})
 
@@ -207,11 +217,11 @@ export class StravaArchiveStack extends CloudFormation.Stack {
 		})
 		sendEmailWithTopDistAndTime.addPermission('InvokeByEvents', {
 			principal: new IAM.ServicePrincipal('events.amazonaws.com') as IPrincipal,
-			sourceArn: rule.ruleArn,
+			sourceArn: weeklyRule.ruleArn,
 		})
 		sendEmailWithRandomWinners.addPermission('InvokeByEvents', {
 			principal: new IAM.ServicePrincipal('events.amazonaws.com') as IPrincipal,
-			sourceArn: rule.ruleArn,
+			sourceArn: weeklyRule.ruleArn,
 		})
 		// Lambda that prepares reports from and provides them via a REST API
 		const summaryAPI = new Lambda.Function(this, 'summaryAPI', {
