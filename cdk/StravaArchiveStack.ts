@@ -60,12 +60,12 @@ export class StravaArchiveStack extends CloudFormation.Stack {
 
 		new CloudFormation.CfnOutput(this, 'tableInfo', {
 			value: table.ref,
-			exportName: 'tableInfo',
+			exportName: `${this.stackName}:tableInfo`,
 		})
 
 		new CloudFormation.CfnOutput(this, 'tableArn', {
 			value: table.attrArn,
-			exportName: 'tableArn',
+			exportName: `${this.stackName}:tableArn`,
 		})
 
 		// Summary cache table
@@ -269,7 +269,7 @@ export class StravaArchiveStack extends CloudFormation.Stack {
 
 		new CloudFormation.CfnOutput(this, 'summaryAPIURL', {
 			value: url.url,
-			exportName: 'summaryAPIURL',
+			exportName: `${this.stackName}:summaryAPIURL`,
 		})
 	}
 }
