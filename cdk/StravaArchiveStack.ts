@@ -12,6 +12,7 @@ import Timestream from 'aws-cdk-lib/aws-timestream'
 import type { StravaArchiveLambdas } from './lambdas'
 //import { TeamCountScheduledQuery } from './TeamCountScheduledQuery.js'
 import { CD } from './CD.js'
+import { STACK_NAME } from './stackConfig.js'
 
 export class StravaArchiveStack extends CloudFormation.Stack {
 	public constructor(
@@ -29,7 +30,7 @@ export class StravaArchiveStack extends CloudFormation.Stack {
 			gitHubOIDCProviderArn: string
 		},
 	) {
-		super(parent, 'strava-archive')
+		super(parent, STACK_NAME)
 
 		// Set up role for CD
 		const gitHubOIDC = IAM.OpenIdConnectProvider.fromOpenIdConnectProviderArn(
