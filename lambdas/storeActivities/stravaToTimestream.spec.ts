@@ -33,7 +33,7 @@ describe('stravaToTimestream', () => {
 				elapsed_time: 7966,
 				total_elevation_gain: 803,
 				type: 'Ride',
-				sport_type: 'Ride',
+				sport_type: 'MountainBikeRide',
 				workout_type: null,
 			},
 			{
@@ -81,7 +81,7 @@ describe('stravaToTimestream', () => {
 				{ Name: 'Team', Value: '42', dimensionValueType: 'INT' },
 				{
 					Name: 'activity_id',
-					Value: '473a55b4341d5ab64affde12803abee527d5a9f6',
+					Value: 'e1feef9f09ebe228bdaeeedb18a82c01eabed3fe',
 					dimensionValueType: 'VARCHAR',
 				},
 				{
@@ -91,7 +91,7 @@ describe('stravaToTimestream', () => {
 				},
 				{
 					Name: 'activity_type',
-					Value: 'Ride',
+					Value: 'MountainBikeRide',
 					dimensionValueType: 'VARCHAR',
 				},
 			],
