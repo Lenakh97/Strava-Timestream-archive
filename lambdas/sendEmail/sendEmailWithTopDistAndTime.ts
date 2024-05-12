@@ -2,8 +2,6 @@ import { SESClient } from '@aws-sdk/client-ses'
 import { fromEnv } from '@nordicsemiconductor/from-env'
 import { createSendEmailCommand } from './createSendEmailCommand.js'
 import { getTopDistanceAndTimeAthlete } from './getTopDistanceAndTimeAthlete.js'
-import { JsonToEmailFormat } from './JsonToEmailFormat.js'
-import { teamList } from '../teamList.js'
 import { sendEmail } from '../../config.js'
 
 const ses = new SESClient({})
@@ -20,11 +18,11 @@ export const handler = async (): Promise<any> => {
 	})
 	const winners = JSON.stringify(topDistAndTimeAthletes)
 	const parsed = JSON.parse(winners)
-	const content = JsonToEmailFormat(parsed, teamList)
+	//const content = JsonToEmailFormat(parsed, teamList)
 	const sendEmailCommand = createSendEmailCommand(
 		sendEmail.toAddress,
 		sendEmail.fromAddress,
-		content,
+		parsed,
 		`Time and Distance Statistics`,
 	)
 
