@@ -1,11 +1,11 @@
-export const StravaChallengeWeeks = [16, 17, 18, 19]
+export const StravaChallengeWeeks = [20, 21, 22, 23]
 export const fallBackStartTimestamp = new Date(
-	'2023-03-27T00:00:00',
+	'2024-05-13T00:00:00',
 ).toISOString()
-export const startDateString = '2023-04-17 00:00:00'
-export const distanceGoal = 15726.7 //last years results
+export const startDateString = '2024-05-13 00:00:00'
+export const distanceGoal = 23202 //last years results
 
-//Headcount from spring 2023
+//Headcount from spring 2024
 export const officeHeadcount = {
 	'1174164': { memberCount: 307 }, //Finland
 	'1174165': { memberCount: 109 }, //Poland
