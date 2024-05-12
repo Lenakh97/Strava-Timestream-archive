@@ -65,7 +65,7 @@ describe('getSummary()', () => {
 						2) /
 					60 /
 					60,
-				distanceGoal: 15726.7, // Hardcoded goal from last year
+				distanceGoal: 23202, // Hardcoded goal from last year
 				teamInfo: {
 					'Team A': { memberCount: 3 },
 					'Team B': { memberCount: 3 },
