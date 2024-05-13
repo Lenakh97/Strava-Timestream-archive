@@ -56,7 +56,8 @@ export const getTopDistanceAndTimeAthlete = async ({
                         WHEN activity_type = 'EBikeRide' THEN measure_value::double / 5
                         WHEN activity_type = 'Snowboard' THEN measure_value::double * 0
                         WHEN activity_type = 'AlpineSki' THEN measure_value::double * 0
-                        ELSE measure_value::double
+                        WHEN activity_type = 'Golf' THEN measure_value::double * 0
+						ELSE measure_value::double
                     END) / 1000 FROM "${DatabaseName}"."${TableName}" WHERE measure_name='distance' AND athlete='${athleteName}' AND Team='${TeamID}' AND time > '${startDateString}' `,
 				}),
 			)

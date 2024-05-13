@@ -54,7 +54,8 @@ export const stravaToTimestream = (
 		if (
 			activity.distance === 0.0 ||
 			activity.sport_type === 'Snowboard' ||
-			activity.sport_type === 'AlpineSki'
+			activity.sport_type === 'AlpineSki' ||
+			activity.sport_type == 'Golf'
 		) {
 			const hours = activity.elapsed_time / 3600
 			noDistancePoints = 5 * hours * 1000
