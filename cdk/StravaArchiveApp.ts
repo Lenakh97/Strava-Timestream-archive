@@ -2,7 +2,7 @@ import { App } from 'aws-cdk-lib'
 import {
 	prepareStravaArchiveLambdas,
 	type StravaArchiveLambdas,
-} from 'cdk/lambdas'
+} from 'cdk/lambdas.js'
 import { StravaArchiveStack } from './StravaArchiveStack.js'
 import pJSON from '../package.json'
 import { ensureGitHubOIDCProvider } from '../cdk/ensureGitHubOIDCProvider.js'

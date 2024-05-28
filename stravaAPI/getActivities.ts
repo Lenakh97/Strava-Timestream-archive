@@ -1,5 +1,5 @@
 import https from 'node:https'
-import type { StravaActivity } from 'lambdas/storeActivities/stravaToTimestream'
+import type { StravaActivity } from 'lambdas/storeActivities/stravaToTimestream.js'
 
 export const getActivities = async ({
 	team,
