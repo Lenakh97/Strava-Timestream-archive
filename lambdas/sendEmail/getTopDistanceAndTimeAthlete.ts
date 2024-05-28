@@ -3,7 +3,7 @@ import {
 	Row,
 	TimestreamQueryClient,
 } from '@aws-sdk/client-timestream-query'
-import type { AthleteDistanceInfo } from './getTopDistanceAndTimeAthlete.spec'
+import type { AthleteDistanceInfo } from './getTopDistanceAndTimeAthlete.spec.ts'
 import { startDateString } from '../../config.js'
 
 export const getTopDistanceAndTimeAthlete = async ({

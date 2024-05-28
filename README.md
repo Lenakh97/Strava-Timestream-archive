@@ -24,3 +24,19 @@ aws ssm put-parameter --name /strava/refreshToken --type String --value <Strava 
 npx cdk bootstrap # only needed once
 npx cdk deploy
 ```
+
+## Change records in Timestream
+
+The records in Timestream can be changed by using the following command:
+
+```bash
+./cli.sh Upsert-activity-record <Team> <activity_id> <athlete> <activity_type> <Time> <MeasureName> <MeasureValue> <MeasureValueType> <Version>
+```
+
+By using this command you can change the values of either `elapsed_time`,
+`distance`, `nodistance_points` or `elevation`.
+
+Examples of the parameters can be found
+[here](https://github.com/Lenakh97/Strava-Timestream-archive/blob/saga/cli/commands/upsertRecord.ts).
+The table needs to have `Magnetic store writes` enabled if records are in the
+magnetic store.

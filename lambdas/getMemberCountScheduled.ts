@@ -3,7 +3,7 @@ import {
 	TimestreamQueryClient,
 } from '@aws-sdk/client-timestream-query'
 import { parseResult } from '@nordicsemiconductor/timestream-helpers'
-import type { TeamInfo } from './getMemberCount'
+import type { TeamInfo } from './getMemberCount.js'
 
 export const getMemberCountScheduled = async ({
 	tsq,

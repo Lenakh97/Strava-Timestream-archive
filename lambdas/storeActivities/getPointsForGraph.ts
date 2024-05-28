@@ -2,8 +2,8 @@ import {
 	QueryCommand,
 	TimestreamQueryClient,
 } from '@aws-sdk/client-timestream-query'
-import type { TeamInfo } from 'lambdas/getMemberCount'
-import type { TeamInfoTime } from './getTotalTimePerClub'
+import type { TeamInfo } from 'lambdas/getMemberCount.js'
+import type { TeamInfoTime } from './getTotalTimePerClub.js'
 
 export type ClubPoints = Record<string, { points: number }>
 export type HourlyPoints = Record<string, { hourlyPoints: number }>
