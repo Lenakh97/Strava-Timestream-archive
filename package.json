@@ -34,7 +34,7 @@
     "husky": "9.1.1",
     "jest": "29.7.0",
     "tsx": "4.16.2",
-    "typescript": "5.5.3",
+    "typescript": "5.5.4",
     "yazl": "2.5.1"
   },
   "jest": {
