@@ -14,7 +14,7 @@
   "license": "BSD-3-Clause",
   "devDependencies": {
     "@aws-sdk/client-iam": "3.635.0",
-    "@aws-sdk/client-ses": "3.635.0",
+    "@aws-sdk/client-ses": "3.636.0",
     "@aws-sdk/client-ssm": "3.635.0",
     "@aws-sdk/client-timestream-query": "3.635.0",
     "@aws-sdk/client-timestream-write": "3.635.0",
