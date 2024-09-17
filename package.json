@@ -15,7 +15,7 @@
   "devDependencies": {
     "@aws-sdk/client-iam": "3.651.1",
     "@aws-sdk/client-ses": "3.651.1",
-    "@aws-sdk/client-ssm": "3.651.1",
+    "@aws-sdk/client-ssm": "3.653.0",
     "@aws-sdk/client-timestream-query": "3.651.1",
     "@aws-sdk/client-timestream-write": "3.651.1",
     "@aws-sdk/util-dynamodb": "3.651.1",
