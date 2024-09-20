@@ -6,11 +6,11 @@ import {
 } from '@aws-sdk/client-timestream-write'
 import { jest } from '@jest/globals'
 import { randomUUID } from 'crypto'
-import { getPointsForGraph } from './getPointsForGraph.js'
-import { stravaToTimestream } from './stravaToTimestream.js'
+import { TEST_DB_NAME as testDatabaseName } from '../../config.js'
 import testData from '../../test-data/activities.json'
 import { weekNumber } from '../weekNumber.js'
-import { TEST_DB_NAME as testDatabaseName } from '../../config.js'
+import { getPointsForGraph } from './getPointsForGraph.js'
+import { stravaToTimestream } from './stravaToTimestream.js'
 
 const tsw = new TimestreamWriteClient({})
 const testTableName = randomUUID()
@@ -42,14 +42,14 @@ describe('getPointsForGraph()', () => {
 			new WriteRecordsCommand({
 				DatabaseName: testDatabaseName,
 				TableName: testTableName,
-				Records: stravaToTimestream(42, currentTime, testData),
+				Records: stravaToTimestream(42, currentTime, testData, []),
 			}),
 		)
 		await tsw.send(
 			new WriteRecordsCommand({
 				DatabaseName: testDatabaseName,
 				TableName: testTableName,
-				Records: stravaToTimestream(43, currentTime, testData),
+				Records: stravaToTimestream(43, currentTime, testData, []),
 			}),
 		)
 		//points = total distance (which is divided by a number based on activity) divided by active atlethes in the club
