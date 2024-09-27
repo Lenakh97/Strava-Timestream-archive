@@ -16,6 +16,17 @@ export const officeHeadcount = {
 	'1174791': { memberCount: 500 }, //Omega
 	'1174162': { memberCount: 174 }, //Oslo
 }
+
+export const teamTimezoneDiff = {
+	'1174164': { timezoneDiff: 3 }, //Finland
+	'1174165': { timezoneDiff: 2 }, //Poland
+	'1174166': { timezoneDiff: 2 }, //Europe
+	'1174167': { timezoneDiff: 8 }, //APAC
+	'1174168': { timezoneDiff: -7 }, //USA
+	'1174140': { timezoneDiff: 2 }, //Trondheim
+	'1174791': { timezoneDiff: 2 }, //Omega
+	'1174162': { timezoneDiff: 2 }, //Oslo
+}
 /*
 Email to use for sending and receiving random winners 
 and the final winner in the end.

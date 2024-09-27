@@ -24,6 +24,17 @@ export type StravaActivity = {
 	workout_type?: number | null // 10
 }
 
+const teamTimezoneDiff: Record<string, Record<string, number>> = {
+	'1174164': { timezoneDiff: 3 }, //Finland
+	'1174165': { timezoneDiff: 2 }, //Poland
+	'1174166': { timezoneDiff: 2 }, //Europe
+	'1174167': { timezoneDiff: 8 }, //APAC
+	'1174168': { timezoneDiff: -7 }, //USA
+	'1174140': { timezoneDiff: 2 }, //Trondheim
+	'1174791': { timezoneDiff: 2 }, //Omega
+	'1174162': { timezoneDiff: 2 }, //Oslo
+}
+
 export const stravaToTimestream = (
 	team: number,
 	currentTime: Date,
@@ -60,29 +71,37 @@ export const stravaToTimestream = (
 			const hours = activity.elapsed_time / 3600
 			noDistancePoints = 5 * hours * 1000
 		}
+		let timeZoneDiff = 0
+		if (Object.keys(teamTimezoneDiff).includes(String(team))) {
+			timeZoneDiff = teamTimezoneDiff[String(team)]?.timezoneDiff ?? 0
+		}
+		const newTime = (
+			currentTime.getTime() +
+			timeZoneDiff * 60 * 1000
+		).toString()
 		records.push({
-			Time: currentTime.getTime().toString(),
+			Time: newTime,
 			Dimensions: dimension,
 			MeasureName: 'nodistance_points',
 			MeasureValue: String(noDistancePoints),
 			MeasureValueType: 'DOUBLE',
 		})
 		records.push({
-			Time: currentTime.getTime().toString(),
+			Time: newTime,
 			Dimensions: dimension,
 			MeasureName: 'distance',
 			MeasureValue: String(activity.distance),
 			MeasureValueType: 'DOUBLE',
 		})
 		records.push({
-			Time: currentTime.getTime().toString(),
+			Time: newTime,
 			Dimensions: dimension,
 			MeasureName: 'elapsed_time',
 			MeasureValue: String(activity.elapsed_time),
 			MeasureValueType: 'DOUBLE',
 		})
 		records.push({
-			Time: currentTime.getTime().toString(),
+			Time: newTime,
 			Dimensions: dimension,
 			MeasureName: 'elevation',
 			MeasureValue: String(activity.total_elevation_gain),
