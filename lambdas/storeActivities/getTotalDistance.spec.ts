@@ -5,11 +5,11 @@ import {
 	WriteRecordsCommand,
 } from '@aws-sdk/client-timestream-write'
 import { randomUUID } from 'crypto'
-import { getTotalDistance } from './getTotalDistance.js'
-import { stravaToTimestream } from './stravaToTimestream.js'
+import { TEST_DB_NAME as testDatabaseName } from '../../config.js'
 import testData from '../../test-data/activities.json'
 import { weekNumber } from '../weekNumber.js'
-import { TEST_DB_NAME as testDatabaseName } from '../../config.js'
+import { getTotalDistance } from './getTotalDistance.js'
+import { stravaToTimestream } from './stravaToTimestream.js'
 
 const tsw = new TimestreamWriteClient({})
 const testTableName = randomUUID()
@@ -40,7 +40,7 @@ describe('getTotalDistance()', () => {
 			new WriteRecordsCommand({
 				DatabaseName: testDatabaseName,
 				TableName: testTableName,
-				Records: stravaToTimestream(42, currentTime, testData),
+				Records: stravaToTimestream(42, currentTime, testData, []),
 			}),
 		)
 

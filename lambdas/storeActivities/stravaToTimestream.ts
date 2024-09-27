@@ -1,9 +1,9 @@
 import type { _Record } from '@aws-sdk/client-timestream-write'
 import { createHash } from 'node:crypto'
 
-const checksum = (activity: StravaActivity): string => {
+export const checksum = (activity: StravaActivity, date: string): string => {
 	const shasum = createHash('sha1')
-	shasum.update(JSON.stringify(activity))
+	shasum.update(JSON.stringify({ activity, date }))
 	return shasum.digest('hex')
 }
 
@@ -28,14 +28,23 @@ export const stravaToTimestream = (
 	team: number,
 	currentTime: Date,
 	data: StravaActivity[],
+	activityIdsFromDB: string[],
 ): _Record[] => {
 	const records: _Record[] = []
 	for (const activity of data) {
+		const activityId = checksum(
+			activity,
+			currentTime.toISOString().slice(0, 10),
+		)
+		//if activity already in database, continue
+		if (activityIdsFromDB.includes(activityId)) {
+			continue
+		}
 		const dimension = [
 			{ Name: 'Team', Value: String(team), dimensionValueType: 'INT' },
 			{
 				Name: 'activity_id',
-				Value: checksum(activity),
+				Value: activityId,
 				dimensionValueType: 'VARCHAR',
 			},
 			{

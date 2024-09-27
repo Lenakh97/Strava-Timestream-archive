@@ -1,4 +1,8 @@
-import { DynamoDBClient, PutItemCommand } from '@aws-sdk/client-dynamodb'
+import {
+	DynamoDBClient,
+	PutItemCommand,
+	QueryCommand,
+} from '@aws-sdk/client-dynamodb'
 import {
 	GetParameterCommand,
 	ParameterType,
@@ -9,19 +13,19 @@ import {
 	TimestreamWriteClient,
 	WriteRecordsCommand,
 } from '@aws-sdk/client-timestream-write'
-import { marshall } from '@aws-sdk/util-dynamodb'
+import { marshall, unmarshall } from '@aws-sdk/util-dynamodb'
 import { fromEnv } from '@nordicsemiconductor/from-env'
-import { getMemberCount } from '../getMemberCount.js'
-import { getSummary } from './getSummary.js'
-import { getAccessToken } from '../../stravaAPI/getAccessToken.js'
-import { getActivities } from '../../stravaAPI/getActivities.js'
-import { stravaToTimestream } from './stravaToTimestream.js'
-import { teamList } from '../teamList.js'
 import {
 	StravaChallengeWeeks,
 	fallBackStartTimestamp,
 	officeHeadcount,
 } from '../../config.js'
+import { getAccessToken } from '../../stravaAPI/getAccessToken.js'
+import { getActivities } from '../../stravaAPI/getActivities.js'
+import { getMemberCount } from '../getMemberCount.js'
+import { teamList } from '../teamList.js'
+import { getSummary } from './getSummary.js'
+import { checksum, stravaToTimestream } from './stravaToTimestream.js'
 
 const { tableInfo, clientID, clientSecret, refreshToken, cacheTableName } =
 	fromEnv({
@@ -57,7 +61,26 @@ export const handler = async (): Promise<void> => {
 	} catch {
 		startTimestamp = fallBackStartTimestamp
 	}
-
+	const lastActivityIds = await db.send(
+		new QueryCommand({
+			TableName: cacheTableName,
+			KeyConditionExpression: 'cacheKey = :cacheKey',
+			ExpressionAttributeValues: {
+				[':cacheKey']: {
+					S: 'strava-activityIds',
+				},
+			},
+			ProjectionExpression: 'activityIds',
+			ScanIndexForward: false,
+			Limit: 1,
+		}),
+	)
+	const lastActivities = (lastActivityIds.Items ?? []).map((item) =>
+		unmarshall(item),
+	)[0]
+	const activityIdsFromDB: string[] =
+		lastActivities === undefined ? [] : lastActivities.activityIds
+	const activityIds = []
 	for (const { id: team } of teamList) {
 		const data = await getActivities({
 			accessToken,
@@ -66,8 +89,13 @@ export const handler = async (): Promise<void> => {
 				new Date(startTimestamp ?? fallBackStartTimestamp).getTime() / 1000,
 			),
 		})
+		for (const activity of data) {
+			activityIds.push(
+				checksum(activity, new Date().toISOString().slice(0, 10)),
+			)
+		}
 		console.log(JSON.stringify({ data }))
-		const record = stravaToTimestream(team, new Date(), data)
+		const record = stravaToTimestream(team, new Date(), data, activityIdsFromDB)
 		const records = []
 		if (record.length > 100) {
 			let j = 0
@@ -102,7 +130,7 @@ export const handler = async (): Promise<void> => {
 		new PutParameterCommand({
 			Name: '/strava/lastFetchTime',
 			Type: ParameterType.STRING,
-			Value: new Date().toISOString(),
+			Value: new Date(new Date().getTime() - 30 * 60 * 1000).toISOString(),
 			Overwrite: true,
 		}),
 	)
@@ -128,6 +156,17 @@ export const handler = async (): Promise<void> => {
 				timestamp: new Date().toISOString(),
 				ttl: Date.now() / 1000 + 24 * 60 * 60, // 24 hours
 				summary,
+			}),
+		}),
+	)
+	await db.send(
+		new PutItemCommand({
+			TableName: cacheTableName,
+			Item: marshall({
+				cacheKey: 'strava-activityIds',
+				timestamp: new Date().toISOString(),
+				ttl: Date.now() / 1000 + 24 * 60 * 60, // 24 hours
+				activityIds,
 			}),
 		}),
 	)

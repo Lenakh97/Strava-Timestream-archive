@@ -6,11 +6,11 @@ import {
 } from '@aws-sdk/client-timestream-write'
 import { jest } from '@jest/globals'
 import { randomUUID } from 'crypto'
-import { getTopDistanceAndTimeAthlete } from './getTopDistanceAndTimeAthlete.js'
-import { stravaToTimestream } from '../storeActivities/stravaToTimestream.js'
+import { TEST_DB_NAME as testDatabaseName } from '../../config.js'
 import testData from '../../test-data/activities2.json'
 import testData2 from '../../test-data/activities3.json'
-import { TEST_DB_NAME as testDatabaseName } from '../../config.js'
+import { stravaToTimestream } from '../storeActivities/stravaToTimestream.js'
+import { getTopDistanceAndTimeAthlete } from './getTopDistanceAndTimeAthlete.js'
 
 const tsw = new TimestreamWriteClient({})
 const testTableName = randomUUID()
@@ -42,14 +42,14 @@ describe('getTopDistanceAndTimeAthlete()', () => {
 			new WriteRecordsCommand({
 				DatabaseName: testDatabaseName,
 				TableName: testTableName,
-				Records: stravaToTimestream(42, currentTime, testData),
+				Records: stravaToTimestream(42, currentTime, testData, []),
 			}),
 		)
 		await tsw.send(
 			new WriteRecordsCommand({
 				DatabaseName: testDatabaseName,
 				TableName: testTableName,
-				Records: stravaToTimestream(43, currentTime, testData2),
+				Records: stravaToTimestream(43, currentTime, testData2, []),
 			}),
 		)
 

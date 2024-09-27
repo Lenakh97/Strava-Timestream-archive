@@ -261,7 +261,7 @@ export class StravaArchiveStack extends CloudFormation.Stack {
 			},
 			logRetention: RetentionDays.ONE_WEEK,
 		})
-		summaryCacheTable.grantReadData(summaryAPI)
+		summaryCacheTable.grantReadWriteData(summaryAPI)
 
 		const url = summaryAPI.addFunctionUrl({
 			authType: Lambda.FunctionUrlAuthType.NONE,

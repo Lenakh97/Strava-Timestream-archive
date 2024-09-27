@@ -5,10 +5,10 @@ import {
 	WriteRecordsCommand,
 } from '@aws-sdk/client-timestream-write'
 import { randomUUID } from 'crypto'
+import { TEST_DB_NAME as testDatabaseName } from '../config.js'
+import testData from '../test-data/activities.json'
 import { getMemberCount } from './getMemberCount.js'
 import { stravaToTimestream } from './storeActivities/stravaToTimestream.js'
-import testData from '../test-data/activities.json'
-import { TEST_DB_NAME as testDatabaseName } from '../config.js'
 
 const tsw = new TimestreamWriteClient({})
 const testTableName = randomUUID()
@@ -39,14 +39,14 @@ describe('getMemberCount()', () => {
 			new WriteRecordsCommand({
 				DatabaseName: testDatabaseName,
 				TableName: testTableName,
-				Records: stravaToTimestream(42, currentTime, testData),
+				Records: stravaToTimestream(42, currentTime, testData, []),
 			}),
 		)
 		await tsw.send(
 			new WriteRecordsCommand({
 				DatabaseName: testDatabaseName,
 				TableName: testTableName,
-				Records: stravaToTimestream(43, currentTime, testData),
+				Records: stravaToTimestream(43, currentTime, testData, []),
 			}),
 		)
 
