@@ -22,6 +22,7 @@ import {
 	fallBackStartTimestamp,
 	officeHeadcount,
 } from '../../config.js'
+import { chunkArray } from './chunkArray.js'
 
 const { tableInfo, clientID, clientSecret, refreshToken, cacheTableName } =
 	fromEnv({
@@ -68,16 +69,7 @@ export const handler = async (): Promise<void> => {
 		})
 		console.log(JSON.stringify({ data }))
 		const record = stravaToTimestream(team, new Date(), data)
-		const records = []
-		if (record.length > 100) {
-			let j = 0
-			for (let i = 99; j < record.length; i += 100) {
-				records.push(record.slice(j, i))
-				j = i
-			}
-		} else {
-			records.push(record)
-		}
+		const records = chunkArray({ array: record, chunkSize: 100 })
 		for (const rec of records) {
 			if (rec.length == 0) {
 				console.log('Empty record')
