@@ -52,6 +52,23 @@
     ]
   },
   "prettier": "@bifravst/prettier-config",
+  "release": {
+    "branches": [
+      "saga"
+    ],
+    "remoteTags": true,
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      [
+        "@semantic-release/github",
+        {
+          "successComment": false,
+          "failTitle": false
+        }
+      ]
+    ]
+  },
   "engines": {
     "node": ">=18",
     "npm": ">=9"
