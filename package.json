@@ -13,12 +13,12 @@
   "author": "Nordic Semiconductor ASA | nordicsemi.no",
   "license": "BSD-3-Clause",
   "devDependencies": {
-    "@aws-sdk/client-iam": "3.664.0",
-    "@aws-sdk/client-ses": "3.664.0",
-    "@aws-sdk/client-ssm": "3.664.0",
-    "@aws-sdk/client-timestream-query": "3.664.0",
-    "@aws-sdk/client-timestream-write": "3.664.0",
-    "@aws-sdk/util-dynamodb": "3.664.0",
+    "@aws-sdk/client-iam": "3.665.0",
+    "@aws-sdk/client-ses": "3.665.0",
+    "@aws-sdk/client-ssm": "3.665.0",
+    "@aws-sdk/client-timestream-query": "3.665.0",
+    "@aws-sdk/client-timestream-write": "3.665.0",
+    "@aws-sdk/util-dynamodb": "3.665.0",
     "@bifravst/eslint-config-typescript": "6.1.17",
     "@commitlint/config-conventional": "19.5.0",
     "@nordicsemiconductor/asset-tracker-cloud-code-style": "13.1.16",
@@ -85,7 +85,7 @@
     ]
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "3.664.0",
+    "@aws-sdk/client-dynamodb": "3.665.0",
     "@bifravst/prettier-config": "^1.1.1",
     "@nordicsemiconductor/from-env": "3.0.1",
     "@nordicsemiconductor/timestream-helpers": "6.0.2",
