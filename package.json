@@ -18,7 +18,7 @@
     "@aws-sdk/client-ssm": "3.687.0",
     "@aws-sdk/client-timestream-query": "3.687.0",
     "@aws-sdk/client-timestream-write": "3.687.0",
-    "@aws-sdk/util-dynamodb": "3.687.0",
+    "@aws-sdk/util-dynamodb": "3.689.0",
     "@bifravst/eslint-config-typescript": "6.1.18",
     "@commitlint/config-conventional": "19.5.0",
     "@nordicsemiconductor/asset-tracker-cloud-code-style": "13.1.16",
