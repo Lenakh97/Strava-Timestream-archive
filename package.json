@@ -16,7 +16,7 @@
     "@aws-sdk/client-iam": "3.696.0",
     "@aws-sdk/client-ses": "3.696.0",
     "@aws-sdk/client-ssm": "3.696.0",
-    "@aws-sdk/client-timestream-query": "3.696.0",
+    "@aws-sdk/client-timestream-query": "3.697.0",
     "@aws-sdk/client-timestream-write": "3.696.0",
     "@aws-sdk/util-dynamodb": "3.696.0",
     "@bifravst/eslint-config-typescript": "6.1.18",
