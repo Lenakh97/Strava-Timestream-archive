@@ -23,7 +23,7 @@
     "@commitlint/config-conventional": "19.6.0",
     "@nordicsemiconductor/asset-tracker-cloud-code-style": "13.1.16",
     "@nordicsemiconductor/eslint-config-asset-tracker-cloud-typescript": "17.0.0",
-    "@swc/cli": "0.5.1",
+    "@swc/cli": "0.5.2",
     "@swc/jest": "0.2.37",
     "@types/aws-lambda": "8.10.146",
     "@types/jest": "29.5.14",
