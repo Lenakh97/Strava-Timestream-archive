@@ -27,7 +27,7 @@
     "@swc/jest": "0.2.37",
     "@types/aws-lambda": "8.10.147",
     "@types/jest": "29.5.14",
-    "@types/yazl": "2.4.5",
+    "@types/yazl": "2.4.6",
     "aws-cdk": "2.174.1",
     "aws-cdk-lib": "2.174.1",
     "cdk": "2.174.1",
