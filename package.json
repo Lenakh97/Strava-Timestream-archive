@@ -29,7 +29,7 @@
     "@types/jest": "29.5.14",
     "@types/yazl": "2.4.5",
     "aws-cdk": "2.174.1",
-    "aws-cdk-lib": "2.174.1",
+    "aws-cdk-lib": "2.268.0",
     "cdk": "2.174.1",
     "glob": "11.0.1",
     "husky": "9.1.7",
