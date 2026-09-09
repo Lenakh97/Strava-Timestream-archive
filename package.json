@@ -19,7 +19,7 @@
     "@aws-sdk/client-timestream-query": "3.726.1",
     "@aws-sdk/client-timestream-write": "3.726.1",
     "@aws-sdk/util-dynamodb": "3.726.1",
-    "@bifravst/eslint-config-typescript": "6.1.20",
+    "@bifravst/eslint-config-typescript": "6.4.4",
     "@commitlint/config-conventional": "19.6.0",
     "@nordicsemiconductor/asset-tracker-cloud-code-style": "13.1.16",
     "@nordicsemiconductor/eslint-config-asset-tracker-cloud-typescript": "17.0.0",
